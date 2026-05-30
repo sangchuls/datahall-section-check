@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWU 층고 및 배치 검토 대시보드 (저장/내보내기 지원)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <h1>설비/건축 코디네이션: 대시보드 (리던던시 캐쳐 적용)</h1>
+        <div class="header-actions">
+            <button class="action-btn" onclick="saveData()">💾 설정 저장</button>
+            <button class="action-btn" onclick="loadData()">📂 불러오기</button>
+            <button class="action-btn export" onclick="exportData()">⬇️ 내보내기(.json)</button>
+        </div>
+    </div>
+    
+    <div class="dashboard">
+        <div class="panel-inputs">
+            <div class="section">
+                <div class="section-title">[설비] 부하 및 FWU 제원</div>
+                <div class="input-group"><label>IT Load (kW)</label><input type="number" id="nKw" value="8000" step="100"></div>
+                <div class="input-group"><label>CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
+                <div class="input-group"><label>여유율 (×1.X)</label><input type="number" id="nMargin" value="1.1" step="0.05"></div>
+                
+                <div class="input-group"><label>유효 운전 대수 (N)</label><input type="number" id="nUnits" value="32" step="1"></div>
+                <div class="input-group"><label style="color:var(--accent);">평면 총 댓수 (열)</label><input type="number" id="nPlanUnits" value="17" step="1" class="highlight-input"></div>
+                <div class="input-group"><label style="color:var(--standby);">캐쳐(예비) (열)</label><input type="number" id="nCatcher" value="1" step="1" class="standby-input"></div>
+                
+                <div class="input-group"><label>개구부 폭 (m)</label><input type="number" id="nW" value="3.5" step="0.1"></div>
+                <div class="input-group"><label>유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
+                <div class="input-group"><label>SA 풍속 (m/s)</label><input type="number" id="nVel" value="2.5" step="0.1"></div>
+                <div class="input-group"><label>적층 (Tiers)</label>
+                    <select id="nTiers"><option value="1">1단</option><option value="2" selected>2단</option><option value="3">3단</option></select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">[건축] 기둥 및 층고 제원</div>
+                <div class="input-group"><label>건축 층고 (CH, m)</label><input type="number" id="nCH" value="6.0" step="0.1"></div>
+                <div class="input-group"><label>상부 보 깊이 (m)</label><input type="number" id="nBD" value="1.0" step="0.1"></div>
+                <div class="input-group"><label>기둥 간격 (m)</label><input type="number" id="nSpan" value="10.6" step="0.1"></div>
+                <div class="input-group"><label>기둥 너비 (m)</label><input type="number" id="nColW" value="1.0" step="0.1"></div>
+                <div class="input-group"><label>기둥 총 갯수 (EA)</label><input type="number" id="nColCnt" value="5" step="1" min="2"></div>
+                <div class="input-group"><label>기기 간 이격 (m)</label><input type="number" id="nGap" value="0.2" step="0.05"></div>
+            </div>
+        </div>
+
+        <div class="panel-summary">
+            <div class="results-grid">
+                <div class="card full" id="cardPlan"><span>평면 배치 적합성</span><strong id="resPlanFit">검토중</strong></div>
+                <div class="card"><span>FWU 1대 H</span><strong id="resUnitH">0.00 m</strong></div>
+                <div class="card"><span>FWU 총 H</span><strong id="resTotalFwuH">0.00 m</strong></div>
+                <div class="card" id="cardRA"><span>RA 공간</span><strong id="resRa">0.00 m</strong></div>
+                <div class="card info" id="cardRaVel"><span>RA 풍속</span><strong id="resRaVel">0.0 m/s</strong></div>
+            </div>
+
+            <div class="formula-box" id="formulaBox"></div>
+        </div>
+
+        <div class="panel-drawings">
+            <div class="cad-view">
+                <div class="view-label">ELEVATION VIEW (입면 / 층고 / 팬)</div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="handleZoom('elev', 1.2)" title="확대">+</button>
+                    <button class="zoom-btn" onclick="handleZoom('elev', 0.833)" title="축소">-</button>
+                    <button class="zoom-btn" onclick="handleFit('elev')" title="화면 맞춤">Fit</button>
+                </div>
+                <div class="drawing-container" id="elevContainer">
+                    <div class="drawing-wrapper" id="drawElev"></div>
+                </div>
+            </div>
+
+            <div class="cad-view">
+                <div class="view-label">PLAN VIEW (평면 / 이격 배치 / 기류)</div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="handleZoom('plan', 1.2)" title="확대">+</button>
+                    <button class="zoom-btn" onclick="handleZoom('plan', 0.833)" title="축소">-</button>
+                    <button class="zoom-btn" onclick="handleFit('plan')" title="화면 맞춤">Fit</button>
+                </div>
+                <div class="drawing-container" id="planContainer">
+                    <div class="drawing-wrapper" id="drawPlan"></div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
