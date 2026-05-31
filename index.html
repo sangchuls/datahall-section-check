@@ -3,83 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FWU 층고 및 배치 검토 대시보드 (저장/내보내기 지원)</title>
+    <title>FWU & 데이터홀 코디네이션 대시보드</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
     <div class="header-area">
-        <h1>설비/건축 코디네이션: 대시보드 (리던던시 캐쳐 적용)</h1>
+        <h1 data-i18n="title">설비/건축 코디네이션: 대시보드 (종합 평면/단면 & 치수 측정)</h1>
         <div class="header-actions">
-            <button class="action-btn" onclick="saveData()">💾 설정 저장</button>
-            <button class="action-btn" onclick="loadData()">📂 불러오기</button>
-            <button class="action-btn export" onclick="exportData()">⬇️ 내보내기(.json)</button>
+            <select id="langSelect" class="action-btn" style="appearance: auto; cursor: pointer; outline: none;" onchange="changeLang()">
+                <option value="ko">🌐 한국어 (Korean)</option>
+                <option value="en">🌐 English</option>
+            </select>
+            <button class="action-btn" id="btnAnimToggle" onclick="toggleAnimation()" data-i18n="btnAnimPause">⏸ 애니메이션 정지</button>
+            <button class="action-btn" onclick="saveData()" data-i18n="btnSave">💾 설정 저장</button>
+            <button class="action-btn" onclick="loadData()" data-i18n="btnLoad">📂 파일 불러오기(.json)</button>
+            <button class="action-btn export" onclick="exportData()" data-i18n="btnExport">⬇️ 내보내기(.json)</button>
         </div>
     </div>
     
     <div class="dashboard">
         <div class="panel-inputs">
+            
             <div class="section">
-                <div class="section-title">[설비] 부하 및 FWU 제원</div>
-                <div class="input-group"><label>IT Load (kW)</label><input type="number" id="nKw" value="8000" step="100"></div>
-                <div class="input-group"><label>CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
-                <div class="input-group"><label>여유율 (×1.X)</label><input type="number" id="nMargin" value="1.1" step="0.05"></div>
-                
-                <div class="input-group"><label>유효 운전 대수 (N)</label><input type="number" id="nUnits" value="32" step="1"></div>
-                <div class="input-group"><label style="color:var(--accent);">평면 총 댓수 (열)</label><input type="number" id="nPlanUnits" value="17" step="1" class="highlight-input"></div>
-                <div class="input-group"><label style="color:var(--standby);">캐쳐(예비) (열)</label><input type="number" id="nCatcher" value="1" step="1" class="standby-input"></div>
-                
-                <div class="input-group"><label>개구부 폭 (m)</label><input type="number" id="nW" value="3.5" step="0.1"></div>
-                <div class="input-group"><label>유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
-                <div class="input-group"><label>SA 풍속 (m/s)</label><input type="number" id="nVel" value="2.5" step="0.1"></div>
-                <div class="input-group"><label>적층 (Tiers)</label>
-                    <select id="nTiers"><option value="1">1단</option><option value="2" selected>2단</option><option value="3">3단</option></select>
+                <div class="section-title" data-i18n="sec1">[종합] 데이터홀 & 설비 배치</div>
+                <div class="input-group" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <label data-i18n="lblFwuType">FWU 갤러리 배치 타입</label>
+                    <div style="display:flex; gap:10px; font-size:12px; font-weight:bold; color:var(--primary);">
+                        <label><input type="radio" name="fwuType" value="A" checked> <span data-i18n="valA">A (상단)</span></label>
+                        <label><input type="radio" name="fwuType" value="B"> <span data-i18n="valB">B (하단)</span></label>
+                        <label><input type="radio" name="fwuType" value="C"> <span data-i18n="valC">C (상/하 양측)</span></label>
+                    </div>
                 </div>
             </div>
 
             <div class="section">
-                <div class="section-title">[건축] 기둥 및 층고 제원</div>
-                <div class="input-group"><label>건축 층고 (CH, m)</label><input type="number" id="nCH" value="6.0" step="0.1"></div>
-                <div class="input-group"><label>상부 보 깊이 (m)</label><input type="number" id="nBD" value="1.0" step="0.1"></div>
-                <div class="input-group"><label>기둥 간격 (m)</label><input type="number" id="nSpan" value="10.6" step="0.1"></div>
-                <div class="input-group"><label>기둥 너비 (m)</label><input type="number" id="nColW" value="1.0" step="0.1"></div>
-                <div class="input-group"><label>기둥 총 갯수 (EA)</label><input type="number" id="nColCnt" value="5" step="1" min="2"></div>
-                <div class="input-group"><label>기기 간 이격 (m)</label><input type="number" id="nGap" value="0.2" step="0.05"></div>
+                <div class="section-title" data-i18n="sec2">[데이터홀] IT 랙 제원 (HAC 기준)</div>
+                <div class="input-group"><label data-i18n="lblRW">랙 폭 (W, m)</label><input type="number" id="rW" value="0.6" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblRD">랙 깊이 (D, m)</label><input type="number" id="rD" value="1.2" step="0.1"></div>
+                <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRH">랙 높이 (H, m)</label><input type="number" id="rH" value="2.3" step="0.1" class="highlight-input"></div>
+                <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRHA">Hot Aisle (m)</label><input type="number" id="rHA" value="1.2" step="0.1" class="highlight-input"></div>
+                <div class="input-group"><label style="color:var(--cold);" data-i18n="lblRCA">Cold Aisle (m)</label><input type="number" id="rCA" value="1.8" step="0.1"></div>
+                <div class="input-group"><label style="color:var(--primary);" data-i18n="lblRCorridor">복도 이격 거리 (m)</label><input type="number" id="rCorridor" value="2.0" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblRCnt">열당 랙 개수 (EA)</label><input type="number" id="rCnt" value="36" step="1"></div>
+                <div class="input-group"><label data-i18n="lblRRows">배치 열 수 (EA)</label><input type="number" id="rRows" value="24" step="1"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title" data-i18n="sec3">[설비] 부하 및 FWU 제원</div>
+                <div class="input-group"><label data-i18n="lblNKw">IT Load (kW)</label><input type="number" id="nKw" value="8000" step="100"></div>
+                <div class="input-group"><label data-i18n="lblNCfm">CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
+                <div class="input-group"><label data-i18n="lblNMargin">여유율 (×1.X)</label><input type="number" id="nMargin" value="1.1" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNUnits">편측 유효 대수 (N)</label><input type="number" id="nUnits" value="32" step="1"></div>
+                <div class="input-group"><label data-i18n="lblNPlanUnits">편측 총 댓수 (열)</label><input type="number" id="nPlanUnits" value="18" step="1"></div>
+                <div class="input-group"><label style="color:var(--standby);" data-i18n="lblNCatcher">캐쳐(예비) (열)</label><input type="number" id="nCatcher" value="2" step="1" class="standby-input"></div>
+                <div class="input-group"><label data-i18n="lblNW">개구부 폭 (m)</label><input type="number" id="nW" value="3.1" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNRatio">유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNVel">SA 풍속 (m/s)</label><input type="number" id="nVel" value="2.5" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNTiers">적층 (Tiers)</label>
+                    <select id="nTiers">
+                        <option value="1" data-i18n="valT1">1단</option>
+                        <option value="2" selected data-i18n="valT2">2단</option>
+                        <option value="3" data-i18n="valT3">3단</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title" data-i18n="sec4">[건축] 기둥 및 층고 제원</div>
+                <div class="input-group"><label data-i18n="lblNCH">건축 층고 (CH, m)</label><input type="number" id="nCH" value="9" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNSlab">슬라브 두께 (m)</label><input type="number" id="nSlab" value="0.2" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNBD">상부 보 깊이 (m)</label><input type="number" id="nBD" value="1.0" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNSpan">기둥 간격 (m)</label><input type="number" id="nSpan" value="11.2" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNColW">기둥 너비 (m)</label><input type="number" id="nColW" value="1.0" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNColCnt">기둥 총 갯수 (EA)</label><input type="number" id="nColCnt" value="7" step="1" min="2"></div>
+                <div class="input-group"><label data-i18n="lblNGap">기기 간 이격 (m)</label><input type="number" id="nGap" value="0.2" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNColGap">기둥 이격 (m)</label><input type="number" id="nColGap" value="0.2" step="0.05"></div>
             </div>
         </div>
 
         <div class="panel-summary">
             <div class="results-grid">
-                <div class="card full" id="cardPlan"><span>평면 배치 적합성</span><strong id="resPlanFit">검토중</strong></div>
-                <div class="card"><span>FWU 1대 H</span><strong id="resUnitH">0.00 m</strong></div>
-                <div class="card"><span>FWU 총 H</span><strong id="resTotalFwuH">0.00 m</strong></div>
-                <div class="card" id="cardRA"><span>RA 공간</span><strong id="resRa">0.00 m</strong></div>
-                <div class="card info" id="cardRaVel"><span>RA 풍속</span><strong id="resRaVel">0.0 m/s</strong></div>
+                <div class="card full" style="background:#e8f4f8; border-color:#3498db;">
+                    <span style="color:#2980b9;" data-i18n="card1">총 랙 수량 & 밀도</span>
+                    <strong id="resRackDensity" style="color:#2c3e50;">0 EA (0.0 kW/Rack)</strong>
+                </div>
+                <div class="card full" id="cardPlan"><span data-i18n="card2">FWU 배치 적합성</span><strong id="resPlanFit">검토중</strong></div>
+                <div class="card"><span data-i18n="card3">FWU 1대 H</span><strong id="resUnitH">0.00 m</strong></div>
+                <div class="card"><span data-i18n="card4">FWU 총 H</span><strong id="resTotalFwuH">0.00 m</strong></div>
+                <div class="card" id="cardRA"><span data-i18n="card5">RA 공간</span><strong id="resRa">0.00 m</strong></div>
+                <div class="card info" id="cardRaVel"><span data-i18n="card6">RA 풍속</span><strong id="resRaVel">0.0 m/s</strong></div>
             </div>
-
-            <div class="formula-box" id="formulaBox"></div>
+            <div class="formula-box" id="formulaBox" style="font-size: 10px;"></div>
         </div>
 
-        <div class="panel-drawings">
-            <div class="cad-view">
-                <div class="view-label">ELEVATION VIEW (입면 / 층고 / 팬)</div>
-                <div class="zoom-controls">
-                    <button class="zoom-btn" onclick="handleZoom('elev', 1.2)" title="확대">+</button>
-                    <button class="zoom-btn" onclick="handleZoom('elev', 0.833)" title="축소">-</button>
-                    <button class="zoom-btn" onclick="handleFit('elev')" title="화면 맞춤">Fit</button>
+        <div class="panel-drawings" id="viewerArea">
+            <div class="cad-view" id="topViewPanel" style="flex: 0.6;">
+                <div class="view-tabs">
+                    <button class="tab-btn active" onclick="switchTopView('elev')" data-i18n="tabElev">ELEVATION VIEW (입면)</button>
+                    <button class="tab-btn" onclick="switchTopView('sect')" data-i18n="tabSect">SECTION VIEW (단면)</button>
                 </div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn measure-btn" id="btnMeasureTop" onclick="toggleMeasure('top')" title="거리 측정">📏</button>
+                    <button class="zoom-btn" onclick="handleZoom(currentTopView, 1.2)">+</button>
+                    <button class="zoom-btn" onclick="handleZoom(currentTopView, 0.833)">-</button>
+                    <button class="zoom-btn" onclick="handleFit(currentTopView)">Fit</button>
+                </div>
+                
                 <div class="drawing-container" id="elevContainer">
                     <div class="drawing-wrapper" id="drawElev"></div>
                 </div>
+                <div class="drawing-container" id="sectContainer" style="display:none;">
+                    <div class="drawing-wrapper" id="drawSect"></div>
+                </div>
             </div>
 
-            <div class="cad-view">
-                <div class="view-label">PLAN VIEW (평면 / 이격 배치 / 기류)</div>
+            <div class="v-resizer" id="vResizer"></div>
+
+            <div class="cad-view" id="bottomViewPanel" style="flex: 1.4;">
+                <div class="view-label" style="top:0;" data-i18n="tabPlan">PLAN VIEW (데이터홀 & FWU 코디네이션)</div>
                 <div class="zoom-controls">
-                    <button class="zoom-btn" onclick="handleZoom('plan', 1.2)" title="확대">+</button>
-                    <button class="zoom-btn" onclick="handleZoom('plan', 0.833)" title="축소">-</button>
-                    <button class="zoom-btn" onclick="handleFit('plan')" title="화면 맞춤">Fit</button>
+                    <button class="zoom-btn measure-btn" id="btnMeasurePlan" onclick="toggleMeasure('plan')" title="거리 측정">📏</button>
+                    <button class="zoom-btn" onclick="handleZoom('plan', 1.2)">+</button>
+                    <button class="zoom-btn" onclick="handleZoom('plan', 0.833)">-</button>
+                    <button class="zoom-btn" onclick="handleFit('plan')">Fit</button>
                 </div>
                 <div class="drawing-container" id="planContainer">
                     <div class="drawing-wrapper" id="drawPlan"></div>
