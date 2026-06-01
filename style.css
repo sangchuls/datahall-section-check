@@ -7,9 +7,10 @@
 body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; height: 100vh; box-sizing: border-box; overflow: hidden; color: #333; }
 .container { display: flex; flex-direction: column; height: 100%; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary); padding: 12px 15px; box-sizing: border-box; }
 
-.header-area { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 8px; margin-bottom: 12px; flex-shrink: 0; }
+.header-area { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--line); padding-bottom: 8px; margin-bottom: 12px; flex-shrink: 0; }
 h1 { font-size: 18px; color: var(--primary); margin: 0; letter-spacing: -0.5px; }
-.header-actions { display: flex; gap: 8px; }
+.credits { font-size: 11px; color: var(--secondary); margin-top: 4px; font-weight: bold; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
 .action-btn { background: #fff; border: 1px solid #ccc; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; color: var(--primary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;}
 .action-btn:hover { background: #f8f9fa; border-color: var(--primary); }
 .action-btn.export { background: var(--secondary); color: #fff; border-color: var(--secondary); }
@@ -64,12 +65,12 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 
 .cad-view { flex: 1; border: 1px solid var(--line); background: #fff; position: relative; border-radius: 4px; display: flex; flex-direction: column; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 20px 20px; overflow: hidden; min-height: 150px; }
 
-.view-tabs { display: flex; position: absolute; top: 0; left: 0; z-index: 200; background: rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0 0 4px 0; overflow: hidden;}
+.view-tabs { display: flex; position: absolute; top: 0; left: 0; z-index: 200; background: rgba(255,255,255,0.9); border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 4px 0 4px 0; overflow: hidden;}
 .tab-btn { background: transparent; border: none; padding: 6px 12px; font-size: 11px; font-weight: bold; color: #7f8c8d; cursor: pointer; border-right: 1px solid #ddd; outline: none; transition: background 0.2s;}
 .tab-btn:last-child { border-right: none; }
 .tab-btn.active { background: var(--primary); color: white; }
 .tab-btn:hover:not(.active) { background: #f0f2f5; }
-.view-label { font-size: 11px; font-weight: bold; color: var(--primary); background: rgba(255,255,255,0.9); padding: 4px 8px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; position: absolute; top: 0; left: 0; z-index: 200; border-radius: 0 0 4px 0; }
+.view-label { font-size: 11px; font-weight: bold; color: var(--primary); background: rgba(255,255,255,0.9); padding: 4px 8px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; position: absolute; top: 0; left: 0; z-index: 200; border-radius: 4px 0 4px 0; }
 
 .zoom-controls { position: absolute; top: 10px; right: 10px; z-index: 200; display: flex; gap: 4px; background: rgba(255,255,255,0.95); padding: 4px; border-radius: 4px; border: 1px solid #bdc3c7; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .zoom-btn { background: #f8f9fa; border: 1px solid #ccc; border-radius: 3px; padding: 4px 8px; cursor: pointer; font-weight: bold; color: #2c3e50; font-size: 12px; min-width: 28px; transition: 0.1s;}
@@ -80,29 +81,18 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 .drawing-container:active { cursor: grabbing; }
 .drawing-wrapper { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: transform 0.05s ease-out; }
 
-.measure-line { 
-    position: absolute; 
-    height: 0px; 
-    border-top: 2px dashed #e74c3c; 
-    transform-origin: 0 0; 
-    pointer-events: none; 
-    z-index: 999; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-}
-.measure-label { 
-    position: absolute; 
-    background: #e74c3c; 
-    color: white; 
-    padding: 2px 6px; 
-    border-radius: 4px; 
-    font-size: 11px; 
-    font-weight: bold; 
-    transform: translateY(-4px); 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-}
+.measure-line { position: absolute; height: 0px; border-top: 2px dashed #e74c3c; transform-origin: 0 0; pointer-events: none; z-index: 999; display: flex; align-items: center; justify-content: center; }
+.measure-label { position: absolute; background: #e74c3c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; transform: translateY(-4px); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 .snap-indicator { position: absolute; width: 10px; height: 10px; border: 2px solid #e74c3c; background: rgba(231, 76, 60, 0.2); transform: translate(-50%, -50%); pointer-events: none; z-index: 1000; display: none; }
+
+.flow-arrow { position: absolute; font-size: 11px; font-weight: bold; z-index: 110; white-space: nowrap; }
+.flow-arrow.ra { color: #e74c3c; }
+.flow-arrow.sa { color: #3498db; }
+.flow-arrow.move-left { animation: move_left 2s infinite linear; }
+.flow-arrow.move-right { animation: move_right 2s infinite linear; }
+@keyframes move_left { 0% { transform: translateX(0); } 100% { transform: translateX(-15px); } }
+@keyframes move_right { 0% { transform: translateX(0); } 100% { transform: translateX(15px); } }
+body.pause-animations .flow-arrow { animation-play-state: paused !important; }
 
 .col-block { position: absolute; background: #7f8c8d; border: 1px solid #2c3e50; box-sizing: border-box; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; writing-mode: vertical-rl; box-shadow: 3px 0 6px rgba(0,0,0,0.15); }
 .beam-block { position: absolute; background: #636e72; border-bottom: 2px solid #2c3e50; box-sizing: border-box; z-index: 100; opacity: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
@@ -111,7 +101,6 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 .fwu-block.error { border: 2px solid var(--accent) !important; background: #ffebeb !important; z-index: 11; }
 .fwu-block.error .fwu-label, .fwu-block.error .fan-svg { color: var(--accent) !important; }
 
-/* 💡 [UPDATE] CDU 디자인 속성 추가 */
 .cdu-block { position: absolute; border: 1px solid #27ae60; background: #e8f8f5; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: #27ae60; box-shadow: inset 0 0 5px rgba(39,174,96,0.1); z-index: 10; }
 .cdu-block.catcher { border: 1.5px dashed var(--standby); background: #fffaf0; box-shadow: inset 0 0 5px rgba(243, 156, 18, 0.1); color: var(--standby); }
 .cdu-block.error { border: 2px solid var(--accent) !important; background: #ffebeb !important; z-index: 11; }
@@ -119,7 +108,7 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 .ra-space { position: absolute; background: repeating-linear-gradient(45deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.1) 4px, rgba(255,255,255,0) 4px, rgba(255,255,255,0) 8px); border: 1px dashed var(--success); box-sizing: border-box; z-index: 4; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: var(--success); }
 .ra-space.error { background: rgba(231, 76, 60, 0.2); border-color: var(--accent); color: var(--accent); z-index: 12; }
 
-.sa-air { position: absolute; z-index: 3; pointer-events: none; border-radius: 4px; box-sizing: border-box; }
+.sa-air { position: absolute; z-index: 3; pointer-events: none; border-radius: 4px; box-sizing: border-box; color: rgba(41,128,185,0.9); font-size: 8px; font-weight: bold;}
 .sa-air.down { background: repeating-linear-gradient(0deg, rgba(52,152,219,0.1) 0px, rgba(52,152,219,0.1) 4px, rgba(52,152,219,0.4) 4px, rgba(52,152,219,0.4) 8px); animation: airflow_down linear infinite; }
 .sa-air.up { background: repeating-linear-gradient(0deg, rgba(52,152,219,0.1) 0px, rgba(52,152,219,0.1) 4px, rgba(52,152,219,0.4) 4px, rgba(52,152,219,0.4) 8px); animation: airflow_up linear infinite; }
 @keyframes airflow_down { from { background-position: 0 0; } to { background-position: 0 16px; } }

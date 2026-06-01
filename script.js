@@ -1,16 +1,16 @@
 const translations = {
     ko: {
-        title: "설비/건축 코디네이션: 대시보드 (종합 평면/단면 & 치수 측정)",
+        title: "Datahall 검토 프로그램",
         btnAnimPause: "⏸ 애니메이션 정지", btnAnimPlay: "▶ 애니메이션 재생",
         btnSave: "💾 브라우저 임시저장", btnLoad: "📂 파일 불러오기(.json)", btnExport: "⬇️ 파일 내보내기(.json)",
         sec1: "[종합] 데이터홀 & 설비 배치", lblFwuType: "FWU 갤러리 배치 타입",
         valA: "A (상단)", valB: "B (하단)", valC: "C (상/하 양측)",
-        sec2: "[데이터홀] IT 랙 제원 (HAC 기준)",
+        sec2: "[데이터홀] IT 랙 제원",
         lblRW: "랙 폭 (W, m)", lblRD: "랙 깊이 (D, m)", lblRH: "랙 높이 (H, m)",
         lblRHA: "Hot Aisle (m)", lblRCA: "Cold Aisle (m)", lblRCorridor: "복도 이격 거리 (m)", lblRCnt: "열당 랙 개수 (EA)", lblRRows: "배치 열 수 (EA)",
         sec3: "[설비] 부하 및 FWU 제원",
         lblNKw: "IT Load (kW)", lblNCfm: "CFM/kW", lblNMargin: "여유율 (×1.X)",
-        lblNUnits: "AC 편측 유효 대수(N)", lblNPlanUnits: "AC 편측 총 댓수(열)", lblNCatcher: "AC 캐쳐(예비)(열)",
+        lblNUnits: "AC 유효 대수 (N)", lblNPlanUnits: "AC 총 댓수 (열)", lblNCatcher: "AC 캐쳐(예비) (열)",
         lblNW: "AC 개구부 폭 (m)", lblNRatio: "AC 유효 개구율", lblNVel: "AC SA 풍속(m/s)", lblNTiers: "적층 (Tiers)",
         lblAcRatio: "AC 담당 비율 (%)", lblLcRatio: "LC 담당 비율 (%)", lblCduCap: "CDU 용량 (kW)", lblCduW: "CDU 폭 (m)", lblCduCatcher: "CDU 예비 대수 (EA)",
         valT1: "1단", valT2: "2단", valT3: "3단",
@@ -27,18 +27,18 @@ const translations = {
         lblStandby: "Standby", lblCatcher: "Catcher", lblRacks: "IT Racks", lblBeam: "Beam", lblFloorSlab: "FLOOR SLAB", lblCeilSlab: "CEILING SLAB", clash: "간섭"
     },
     en: {
-        title: "MEP/Arch Coordination Dashboard (Plan, Section & Dimensions)",
+        title: "Datahall Review Program",
         btnAnimPause: "⏸ Pause Anim", btnAnimPlay: "▶ Play Anim",
         btnSave: "💾 Save (Browser)", btnLoad: "📂 Load File (.json)", btnExport: "⬇️ Export File (.json)",
         sec1: "[General] Data Hall & MEP Layout", lblFwuType: "FWU Gallery Layout Type",
         valA: "A (Top)", valB: "B (Bottom)", valC: "C (Top/Bottom)",
-        sec2: "[Data Hall] IT Rack Specs (HAC)",
+        sec2: "[Data Hall] IT Rack Specs",
         lblRW: "Rack Width (W, m)", lblRD: "Rack Depth (D, m)", lblRH: "Rack Height (H, m)",
         lblRHA: "Hot Aisle (m)", lblRCA: "Cold Aisle (m)", lblRCorridor: "Corridor Gap (m)", lblRCnt: "Racks per Row (EA)", lblRRows: "Number of Rows (EA)",
         sec3: "[MEP] Load & FWU Specs",
         lblNKw: "IT Load (kW)", lblNCfm: "CFM/kW", lblNMargin: "Safety Margin (×1.X)",
-        lblNUnits: "AC Active/Side (N)", lblNPlanUnits: "AC Total/Side (Rows)", lblNCatcher: "AC Catcher (Rows)",
-        lblNW: "Opening Width (m)", lblNRatio: "Effective Opening Ratio", lblNVel: "SA Velocity (m/s)", lblNTiers: "Tiers",
+        lblNUnits: "AC Active Units (N)", lblNPlanUnits: "AC Total Units (Rows)", lblNCatcher: "AC Catcher (Rows)",
+        lblNW: "AC Opening W(m)", lblNRatio: "Effective Ratio", lblNVel: "SA Velocity (m/s)", lblNTiers: "Tiers",
         lblAcRatio: "AC Load Ratio (%)", lblLcRatio: "LC Load Ratio (%)", lblCduCap: "CDU Capacity (kW)", lblCduW: "CDU Width (m)", lblCduCatcher: "CDU Standby (EA)",
         valT1: "1 Tier", valT2: "2 Tiers", valT3: "3 Tiers",
         sec4: "[Arch] Column & Ceiling Specs",
@@ -234,18 +234,36 @@ let hoveredPanel = 'plan';
 document.getElementById('topViewPanel').addEventListener('mouseenter', () => hoveredPanel = 'top');
 document.getElementById('bottomViewPanel').addEventListener('mouseenter', () => hoveredPanel = 'plan');
 
-function getSnappedCoords(clientX, clientY, wrapper, scale) {
+function getSnappedCoords(e, wrapper, scale) {
     const rect = wrapper.getBoundingClientRect();
-    const rawX = (clientX - rect.left) / scale;
-    const rawY = (clientY - rect.top) / scale;
+    let rawX = (e.clientX - rect.left) / scale;
+    let rawY = (e.clientY - rect.top) / scale;
+    
+    let lockX = false, lockY = false;
+    
+    if (measurePhase === 1) {
+        const dx = rawX - measureStartX;
+        const dy = rawY - measureStartY;
+        const angle = Math.abs(Math.atan2(dy, dx) * 180 / Math.PI);
+        
+        if (e.shiftKey) {
+            if (Math.abs(dx) > Math.abs(dy)) { lockY = true; rawY = measureStartY; }
+            else { lockX = true; rawX = measureStartX; }
+        } else {
+            const snapThreshold = 4;
+            if (angle < snapThreshold || Math.abs(angle - 180) < snapThreshold || Math.abs(angle - 360) < snapThreshold) {
+                lockY = true; rawY = measureStartY;
+            } else if (Math.abs(angle - 90) < snapThreshold || Math.abs(angle - 270) < snapThreshold) {
+                lockX = true; rawX = measureStartX;
+            }
+        }
+    }
 
     let bestX = rawX, bestY = rawY;
-    let bestDist = 25 / scale; 
-    let isPointSnapped = false;
+    let bestDist = 20 / scale; 
 
     const elements = wrapper.querySelectorAll('.col-block, .fwu-block, .cdu-block, .rack-block, .sect-slab, .sect-beam, .sect-fwu, .sect-rack, .beam-block, .aisle-ca, .aisle-ha');
-    let snapCandidates = [];
-
+    
     elements.forEach(el => {
         const elRect = el.getBoundingClientRect();
         const x1 = (elRect.left - rect.left) / scale;
@@ -255,34 +273,30 @@ function getSnappedCoords(clientX, clientY, wrapper, scale) {
         const xc = (x1 + x2) / 2;
         const yc = (y1 + y2) / 2;
 
-        snapCandidates.push(
+        const points = [
             {x: x1, y: y1}, {x: x2, y: y1}, {x: x1, y: y2}, {x: x2, y: y2}, 
-            {x: xc, y: y1}, {x: xc, y: y2}, {x: x1, y: yc}, {x: x2, y: yc}  
-        );
+            {x: xc, y: y1}, {x: xc, y: y2}, {x: x1, y: yc}, {x: x2, y: yc}
+        ];
 
+        points.forEach(p => {
+            if (lockX && Math.abs(p.x - rawX) > 2/scale) return;
+            if (lockY && Math.abs(p.y - rawY) > 2/scale) return;
+
+            const dist = Math.hypot(p.x - rawX, p.y - rawY);
+            if (dist < bestDist) {
+                bestDist = dist; bestX = p.x; bestY = p.y;
+            }
+        });
+        
         if (measurePhase === 1) {
-            if (measureStartX >= x1 && measureStartX <= x2) {
-                snapCandidates.push({x: measureStartX, y: y1}, {x: measureStartX, y: y2});
+            if (!lockY && rawX >= x1 && rawX <= x2) {
+                if (Math.abs(rawY - y1) < bestDist) { bestDist = Math.abs(rawY - y1); bestX = rawX; bestY = y1; }
+                if (Math.abs(rawY - y2) < bestDist) { bestDist = Math.abs(rawY - y2); bestX = rawX; bestY = y2; }
             }
-            if (measureStartY >= y1 && measureStartY <= y2) {
-                snapCandidates.push({x: x1, y: measureStartY}, {x: x2, y: measureStartY});
+            if (!lockX && rawY >= y1 && rawY <= y2) {
+                if (Math.abs(rawX - x1) < bestDist) { bestDist = Math.abs(rawX - x1); bestX = x1; bestY = rawY; }
+                if (Math.abs(rawX - x2) < bestDist) { bestDist = Math.abs(rawX - x2); bestX = x2; bestY = rawY; }
             }
-        }
-    });
-
-    if (measurePhase === 1 && !isPointSnapped) {
-        if (Math.abs(rawX - measureStartX) < bestDist) {
-            snapCandidates.push({x: measureStartX, y: rawY});
-        }
-        if (Math.abs(rawY - measureStartY) < bestDist) {
-            snapCandidates.push({x: rawX, y: measureStartY});
-        }
-    }
-
-    snapCandidates.forEach(p => {
-        const dist = Math.hypot(p.x - rawX, p.y - rawY);
-        if (dist < bestDist) {
-            bestDist = dist; bestX = p.x; bestY = p.y; isPointSnapped = true;
         }
     });
 
@@ -326,7 +340,7 @@ function toggleMeasure(panel) {
 function handleMeasureClick(e, type, wrapper) {
     if(!measureMode[type === 'plan' ? 'plan' : 'top']) return false;
     const scale = viewState[type].scale;
-    const { x, y } = getSnappedCoords(e.clientX, e.clientY, wrapper, scale);
+    const { x, y } = getSnappedCoords(e, wrapper, scale);
 
     if (measurePhase === 0) {
         measureStartX = x; measureStartY = y;
@@ -352,7 +366,7 @@ function handleMeasureClick(e, type, wrapper) {
 
 function handleMeasureMove(e, type, wrapper) {
     const scale = viewState[type].scale;
-    let { x: currentX, y: currentY } = getSnappedCoords(e.clientX, e.clientY, wrapper, scale);
+    let { x: currentX, y: currentY } = getSnappedCoords(e, wrapper, scale);
 
     if(measurePhase !== 1 || !currentMeasureLine) return; 
     
@@ -410,11 +424,10 @@ function calc() {
     
     const fwuRowsRender = totalRows; 
     
-    const eqPerBay = Math.ceil((fwuRowsRender + cduPerSide) / bays);
-    let maxEqBayW = 0;
-    
     let fwuCountT = fwuRowsRender;
     let cduCountT = cduPerSide;
+    let maxEqBayW = 0;
+
     for(let b=0; b<bays; b++) {
         let bayF = Math.ceil(fwuCountT / (bays - b));
         let bayC = Math.ceil(cduCountT / (bays - b));
@@ -466,12 +479,12 @@ function calc() {
         <div class="f-item"><b>${t.form5Title}:</b><br>${t.form5Clear}(${v.nCH}-${v.nSlab}-${v.nBD}m) - ${t.form5Equip}(${totalFwuH.toFixed(2)}m) = <b>${raSpace.toFixed(2)} m</b></div>
     `;
 
-    renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, v.nVel);
+    renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, v.nVel, raVelocity);
 }
 
 const BASE_SCALE = 40; 
 
-function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, saVel) {
+function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, saVel, raVelocity) {
     const totalDrawingWidth = ((v.nColCnt - 1) * v.nSpan) + v.nColW;
     const t = translations[currentLang];
     const bays = v.nColCnt - 1;
@@ -594,45 +607,44 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
 
     const renderGallery = (offsetY, isTop) => {
         let fwuArray = [];
-        for(let i=0; i<fwuRowsRender; i++) {
-            fwuArray.push({ type: 'FWU', isCatcher: i >= (fwuRowsRender - v.nCatcher) });
-        }
+        for(let i=0; i<fwuRowsRender; i++) fwuArray.push({ type: 'FWU', isCatcher: i >= (fwuRowsRender - v.nCatcher) });
         let cduArray = [];
         const gallerySideMultiplier = (v.fwuType === 'C') ? 2 : 1;
         const cduCatcherPerSide = Math.ceil(v.cduCatcher / gallerySideMultiplier);
-        for(let i=0; i<cduPerSide; i++) {
-            cduArray.push({ type: 'CDU', isCatcher: i >= (cduPerSide - cduCatcherPerSide) });
-        }
+        for(let i=0; i<cduPerSide; i++) cduArray.push({ type: 'CDU', isCatcher: i >= (cduPerSide - cduCatcherPerSide) });
         
-        let sideEquip = [];
-        if (cduArray.length > 0 && fwuArray.length > 0) {
-            let spacing = Math.floor(fwuArray.length / cduArray.length);
-            let remainder = fwuArray.length % cduArray.length;
-            let fIdx = 0;
-            for (let i = 0; i < cduArray.length; i++) {
-                let currentSp = spacing + (i < remainder ? 1 : 0);
-                for (let j = 0; j < currentSp; j++) {
-                    if(fIdx < fwuArray.length) sideEquip.push(fwuArray[fIdx++]);
+        let bayDistributions = [];
+        let fCountT = fwuRowsRender, cCountT = cduPerSide;
+        
+        for(let b=0; b<bays; b++) {
+            let bF = Math.ceil(fCountT / (bays - b));
+            let bC = Math.ceil(cCountT / (bays - b));
+            
+            let bEquips = [];
+            let mid = Math.floor(bF / 2);
+            for(let i=0; i<bF; i++) {
+                if(i === mid && bC > 0) {
+                    while(bC > 0) { bEquips.push(cduArray.shift()); bC--; }
                 }
-                sideEquip.push(cduArray[i]);
+                bEquips.push(fwuArray.shift());
             }
-            while(fIdx < fwuArray.length) sideEquip.push(fwuArray[fIdx++]);
-        } else {
-            sideEquip = fwuArray.concat(cduArray); 
+            while(bC > 0) { bEquips.push(cduArray.shift()); bC--; }
+            
+            bayDistributions.push(bEquips);
+            fCountT -= bEquips.filter(e => e.type === 'FWU').length;
+            cCountT -= bEquips.filter(e => e.type === 'CDU').length;
         }
-
-        const equipPerBay = Math.ceil(sideEquip.length / bays);
 
         const sectFwuY = isTop ? (offsetY + (v.nColW*BASE_SCALE) - planDepth) : offsetY;
         const sectColY = offsetY;
-        
+
         let sectFwu = document.createElement('div');
         sectFwu.className = 'sect-fwu';
         sectFwu.style.left = sectFwuY + 'px'; 
         sectFwu.style.bottom = (v.nSlab * BASE_SCALE) + 'px'; 
         sectFwu.style.width = planDepth + 'px';
         sectFwu.style.height = (totalFwuH * BASE_SCALE) + 'px';
-        sectFwu.innerText = 'FWU / CDU';
+        sectFwu.innerText = 'FWU';
         drawSect.appendChild(sectFwu);
 
         let sectBeam = document.createElement('div');
@@ -643,6 +655,30 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
         sectBeam.style.height = (v.nBD * BASE_SCALE) + 'px';
         sectBeam.innerText = t.lblBeam;
         drawSect.appendChild(sectBeam);
+
+        // 💡 [UPDATE] 단면도 RA 화살표 방향 및 위치 재조정 (SA와 반대)
+        if (raSpace > 0) {
+            const raArrow = document.createElement('div');
+            // 상단 갤러리(Top)일 경우 RA는 왼쪽으로(FWU로), 하단(Bottom)일 경우 오른쪽으로(FWU로)
+            raArrow.className = isTop ? 'flow-arrow ra move-left' : 'flow-arrow ra move-right';
+            raArrow.innerHTML = isTop ? `← RA ${raVelocity.toFixed(1)}m/s (35°C)` : `RA ${raVelocity.toFixed(1)}m/s (35°C) →`;
+            
+            // X 위치도 빔 기준 안쪽(데이터홀 방향)으로 고정 배치
+            const arrowX = isTop ? (sectColY + v.nColW*BASE_SCALE + 20) : (sectColY - 140);
+            raArrow.style.left = arrowX + 'px';
+            raArrow.style.bottom = ((v.nSlab * BASE_SCALE) + (totalFwuH + raSpace/2)*BASE_SCALE - 8) + 'px';
+            drawSect.appendChild(raArrow);
+        }
+
+        // 💡 [UPDATE] 단면도 SA 화살표 방향 및 위치 재조정
+        const saArrow = document.createElement('div');
+        saArrow.className = isTop ? 'flow-arrow sa move-right' : 'flow-arrow sa move-left';
+        saArrow.innerHTML = isTop ? `SA ${saVel.toFixed(1)}m/s (22°C) →` : `← SA ${saVel.toFixed(1)}m/s (22°C)`;
+        
+        const saArrowX = isTop ? (sectColY + v.nColW*BASE_SCALE + 20) : (sectColY - 140);
+        saArrow.style.left = saArrowX + 'px';
+        saArrow.style.bottom = ((v.nSlab * BASE_SCALE) + (unitH / 2)*BASE_SCALE - 8) + 'px';
+        drawSect.appendChild(saArrow);
 
         for(let i = 0; i < v.nColCnt; i++) {
             const colX = i * v.nSpan * BASE_SCALE; 
@@ -677,15 +713,14 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                     drawElev.appendChild(beam);
                 }
 
-                // 💡 [UPDATE] 렌더링 할당 배열 계산 및 오프셋 정렬 적용
-                let bayEquips = sideEquip.slice(i * equipPerBay, (i + 1) * equipPerBay);
+                let bayEquips = bayDistributions[i] || [];
                 let bayTotalW = 0;
                 bayEquips.forEach(eq => { bayTotalW += (eq.type === 'FWU' ? v.nW : v.cduW); });
                 bayTotalW += Math.max(0, bayEquips.length - 1) * v.nGap;
 
                 let startX;
                 if (isPlanFit) {
-                    const centerOffsetX = (clearSpan - bayTotalW) / 2; // 💡 [UPDATE] 수정 완료된 부분 (bayTotalW 적용)
+                    const centerOffsetX = (clearSpan - bayTotalW) / 2;
                     startX = colX + (v.nColW * BASE_SCALE) + (centerOffsetX * BASE_SCALE);
                 } else {
                     startX = colX + (v.nColW * BASE_SCALE) + (v.nColGap * BASE_SCALE);
@@ -724,6 +759,7 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                         air.style.width = (eqW * BASE_SCALE) + 'px';
                         air.style.height = airFlowDepth + 'px';
                         air.style.animationDuration = eq.isCatcher ? (animDuration * 4) + 's' : animDuration + 's'; 
+                        air.innerHTML = `<span style="display:block; text-align:center; padding-top:4px;">SA ${v.nVel}m/s (22°C)</span>`;
                         drawPlan.appendChild(air);
                         
                         if(isTop || (!isTop && v.fwuType === 'B')) {
@@ -755,17 +791,6 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                     }
                     
                     currentEqX += (eqW + v.nGap) * BASE_SCALE;
-                }
-
-                if(isTop || (!isTop && v.fwuType === 'B')) {
-                    const raElev = document.createElement('div');
-                    raElev.className = raSpace < 0 ? 'ra-space error' : 'ra-space';
-                    raElev.style.left = (colX + v.nColW * BASE_SCALE) + 'px';
-                    raElev.style.bottom = ((v.nSlab * BASE_SCALE) + (totalFwuH * BASE_SCALE)) + 'px';
-                    raElev.style.width = (clearSpan * BASE_SCALE) + 'px';
-                    if(raSpace >= 0) { raElev.style.height = (raSpace * BASE_SCALE) + 'px'; raElev.innerText = `RA`; } 
-                    else { raElev.style.height = (Math.abs(raSpace) * BASE_SCALE) + 'px'; raElev.style.bottom = ((v.nSlab * BASE_SCALE) + (totalFwuH + raSpace) * BASE_SCALE) + 'px'; raElev.innerText = t.clash; }
-                    drawElev.appendChild(raElev);
                 }
             }
         }
@@ -820,7 +845,7 @@ function autoScaleDrawing() {
         if(!draw.style.width) return;
         
         const availableW = container.clientWidth - 40; 
-        const availableH = container.clientHeight - 40; 
+        const availableH = container.clientHeight - 70; 
         const originalW = parseFloat(draw.style.width);
         const originalH = parseFloat(draw.style.height);
 
@@ -831,7 +856,7 @@ function autoScaleDrawing() {
         viewState[type].baseScale = scale;
         viewState[type].scale = scale;
         viewState[type].panX = 0;
-        viewState[type].panY = 0;
+        viewState[type].panY = 15;
         applyTransform(type);
     });
 }
@@ -846,7 +871,7 @@ function handleZoom(type, factor) {
 function handleFit(type) {
     viewState[type].scale = viewState[type].baseScale;
     viewState[type].panX = 0;
-    viewState[type].panY = 0;
+    viewState[type].panY = 15;
     applyTransform(type);
 }
 

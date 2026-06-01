@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FWU & 데이터홀 코디네이션 대시보드</title>
+    <title>Datahall 검토 프로그램</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
     <div class="header-area">
-        <h1 data-i18n="title">설비/건축 코디네이션: 대시보드 (종합 평면/단면 & 치수 측정)</h1>
+        <div>
+            <h1 data-i18n="title">Datahall 검토 프로그램</h1>
+            <div class="credits">Developer: Lim Sang Chul | Technical Support: Lee Kyung-ha</div>
+        </div>
         <div class="header-actions">
             <select id="langSelect" class="action-btn" style="appearance: auto; cursor: pointer; outline: none;" onchange="changeLang()">
                 <option value="ko">🌐 한국어 (Korean)</option>
@@ -39,7 +42,7 @@
             </div>
 
             <div class="section">
-                <div class="section-title" data-i18n="sec2">[데이터홀] IT 랙 제원 (HAC 기준)</div>
+                <div class="section-title" data-i18n="sec2">[데이터홀] IT 랙 제원</div>
                 <div class="input-group"><label data-i18n="lblRW">랙 폭 (W, m)</label><input type="number" id="rW" value="0.6" step="0.1"></div>
                 <div class="input-group"><label data-i18n="lblRD">랙 깊이 (D, m)</label><input type="number" id="rD" value="1.2" step="0.1"></div>
                 <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRH">랙 높이 (H, m)</label><input type="number" id="rH" value="2.3" step="0.1" class="highlight-input"></div>
@@ -61,8 +64,8 @@
 
                 <div class="input-group"><label data-i18n="lblNCfm">CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
                 <div class="input-group"><label data-i18n="lblNMargin">여유율 (×1.X)</label><input type="number" id="nMargin" value="1.1" step="0.05"></div>
-                <div class="input-group"><label data-i18n="lblNUnits">AC 편측 유효 대수(N)</label><input type="number" id="nUnits" value="32" step="1"></div>
-                <div class="input-group"><label data-i18n="lblNPlanUnits">AC 편측 총 댓수(열)</label><input type="number" id="nPlanUnits" value="18" step="1"></div>
+                <div class="input-group"><label data-i18n="lblNUnits">AC 유효 대수(N)</label><input type="number" id="nUnits" value="32" step="1"></div>
+                <div class="input-group"><label data-i18n="lblNPlanUnits">AC 총 댓수(열)</label><input type="number" id="nPlanUnits" value="18" step="1"></div>
                 <div class="input-group"><label style="color:var(--standby);" data-i18n="lblNCatcher">AC 캐쳐(예비)(열)</label><input type="number" id="nCatcher" value="2" step="1" class="standby-input"></div>
                 <div class="input-group"><label data-i18n="lblNW">AC 개구부 폭 (m)</label><input type="number" id="nW" value="3.1" step="0.1"></div>
                 <div class="input-group"><label data-i18n="lblNRatio">AC 유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
