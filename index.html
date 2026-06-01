@@ -53,14 +53,20 @@
             <div class="section">
                 <div class="section-title" data-i18n="sec3">[설비] 부하 및 FWU 제원</div>
                 <div class="input-group"><label data-i18n="lblNKw">IT Load (kW)</label><input type="number" id="nKw" value="8000" step="100"></div>
+                <div class="input-group"><label data-i18n="lblAcRatio" style="color:#2980b9;">AC 담당 비율 (%)</label><input type="number" id="acRatio" value="40" step="1"></div>
+                <div class="input-group"><label data-i18n="lblLcRatio" style="color:#27ae60;">LC 담당 비율 (%)</label><input type="number" id="lcRatio" value="90" step="1"></div>
+                <div class="input-group"><label data-i18n="lblCduCap" style="color:#27ae60;">CDU 용량 (kW)</label><input type="number" id="cduCap" value="850" step="10"></div>
+                <div class="input-group"><label data-i18n="lblCduCatcher" style="color:#27ae60;">CDU 예비 대수 (EA)</label><input type="number" id="cduCatcher" value="1" step="1"></div>
+                <div class="input-group"><label data-i18n="lblCduW">CDU 폭 (m)</label><input type="number" id="cduW" value="1.0" step="0.1"></div>
+
                 <div class="input-group"><label data-i18n="lblNCfm">CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
                 <div class="input-group"><label data-i18n="lblNMargin">여유율 (×1.X)</label><input type="number" id="nMargin" value="1.1" step="0.05"></div>
-                <div class="input-group"><label data-i18n="lblNUnits">편측 유효 대수 (N)</label><input type="number" id="nUnits" value="32" step="1"></div>
-                <div class="input-group"><label data-i18n="lblNPlanUnits">편측 총 댓수 (열)</label><input type="number" id="nPlanUnits" value="18" step="1"></div>
-                <div class="input-group"><label style="color:var(--standby);" data-i18n="lblNCatcher">캐쳐(예비) (열)</label><input type="number" id="nCatcher" value="2" step="1" class="standby-input"></div>
-                <div class="input-group"><label data-i18n="lblNW">개구부 폭 (m)</label><input type="number" id="nW" value="3.1" step="0.1"></div>
-                <div class="input-group"><label data-i18n="lblNRatio">유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
-                <div class="input-group"><label data-i18n="lblNVel">SA 풍속 (m/s)</label><input type="number" id="nVel" value="2.5" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNUnits">AC 편측 유효 대수(N)</label><input type="number" id="nUnits" value="32" step="1"></div>
+                <div class="input-group"><label data-i18n="lblNPlanUnits">AC 편측 총 댓수(열)</label><input type="number" id="nPlanUnits" value="18" step="1"></div>
+                <div class="input-group"><label style="color:var(--standby);" data-i18n="lblNCatcher">AC 캐쳐(예비)(열)</label><input type="number" id="nCatcher" value="2" step="1" class="standby-input"></div>
+                <div class="input-group"><label data-i18n="lblNW">AC 개구부 폭 (m)</label><input type="number" id="nW" value="3.1" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNRatio">AC 유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNVel">AC SA 풍속(m/s)</label><input type="number" id="nVel" value="2.5" step="0.1"></div>
                 <div class="input-group"><label data-i18n="lblNTiers">적층 (Tiers)</label>
                     <select id="nTiers">
                         <option value="1" data-i18n="valT1">1단</option>
@@ -89,7 +95,7 @@
                     <span style="color:#2980b9;" data-i18n="card1">총 랙 수량 & 밀도</span>
                     <strong id="resRackDensity" style="color:#2c3e50;">0 EA (0.0 kW/Rack)</strong>
                 </div>
-                <div class="card full" id="cardPlan"><span data-i18n="card2">FWU 배치 적합성</span><strong id="resPlanFit">검토중</strong></div>
+                <div class="card full" id="cardPlan"><span data-i18n="card2">갤러리 배치 적합성</span><strong id="resPlanFit">검토중</strong></div>
                 <div class="card"><span data-i18n="card3">FWU 1대 H</span><strong id="resUnitH">0.00 m</strong></div>
                 <div class="card"><span data-i18n="card4">FWU 총 H</span><strong id="resTotalFwuH">0.00 m</strong></div>
                 <div class="card" id="cardRA"><span data-i18n="card5">RA 공간</span><strong id="resRa">0.00 m</strong></div>

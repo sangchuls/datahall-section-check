@@ -104,12 +104,17 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 }
 .snap-indicator { position: absolute; width: 10px; height: 10px; border: 2px solid #e74c3c; background: rgba(231, 76, 60, 0.2); transform: translate(-50%, -50%); pointer-events: none; z-index: 1000; display: none; }
 
-/* 💡 [UPDATE] 모든 CAD 요소에 일괄적으로 box-sizing: border-box 적용 */
 .col-block { position: absolute; background: #7f8c8d; border: 1px solid #2c3e50; box-sizing: border-box; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; writing-mode: vertical-rl; box-shadow: 3px 0 6px rgba(0,0,0,0.15); }
 .beam-block { position: absolute; background: #636e72; border-bottom: 2px solid #2c3e50; box-sizing: border-box; z-index: 100; opacity: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
+
 .fwu-block { position: absolute; border: 1px solid #2980b9; background: white; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: #2c3e50; box-shadow: inset 0 0 5px rgba(41,128,185,0.1); z-index: 10; }
 .fwu-block.error { border: 2px solid var(--accent) !important; background: #ffebeb !important; z-index: 11; }
 .fwu-block.error .fwu-label, .fwu-block.error .fan-svg { color: var(--accent) !important; }
+
+/* 💡 [UPDATE] CDU 디자인 속성 추가 */
+.cdu-block { position: absolute; border: 1px solid #27ae60; background: #e8f8f5; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: #27ae60; box-shadow: inset 0 0 5px rgba(39,174,96,0.1); z-index: 10; }
+.cdu-block.catcher { border: 1.5px dashed var(--standby); background: #fffaf0; box-shadow: inset 0 0 5px rgba(243, 156, 18, 0.1); color: var(--standby); }
+.cdu-block.error { border: 2px solid var(--accent) !important; background: #ffebeb !important; z-index: 11; }
 
 .ra-space { position: absolute; background: repeating-linear-gradient(45deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.1) 4px, rgba(255,255,255,0) 4px, rgba(255,255,255,0) 8px); border: 1px dashed var(--success); box-sizing: border-box; z-index: 4; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: var(--success); }
 .ra-space.error { background: rgba(231, 76, 60, 0.2); border-color: var(--accent); color: var(--accent); z-index: 12; }
@@ -142,7 +147,7 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 .dim-h.tick-left span { right: 0; transform: translate(50%, -50%) rotate(-90deg); }
 
 .fan-svg { width: 50%; height: 50%; color: #3498db; margin-bottom: 1px; pointer-events: none; }
-.fwu-label { font-size: 8px; color: #2980b9; pointer-events: none; }
+.fwu-label { font-size: 8px; color: inherit; pointer-events: none; }
 
 .fwu-block.catcher { 
     border: 1.5px dashed var(--standby); 
