@@ -20,7 +20,7 @@
                 <option value="en">🌐 English</option>
             </select>
             <button class="action-btn" id="btnAnimToggle" onclick="toggleAnimation()" data-i18n="btnAnimPause">⏸ 애니메이션 정지</button>
-            <button class="action-btn" onclick="saveData()" data-i18n="btnSave">💾 설정 저장</button>
+            <button class="action-btn" onclick="saveData()" data-i18n="btnSave">💾 브라우저 임시저장</button>
             <button class="action-btn" onclick="loadData()" data-i18n="btnLoad">📂 파일 불러오기(.json)</button>
             <button class="action-btn export" onclick="exportData()" data-i18n="btnExport">⬇️ 내보내기(.json)</button>
         </div>
@@ -39,6 +39,30 @@
                         <label><input type="radio" name="fwuType" value="C"> <span data-i18n="valC">C (상/하 양측)</span></label>
                     </div>
                 </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title" data-i18n="sec4">[건축] 기둥 및 층고 제원</div>
+                <div class="input-group"><label data-i18n="lblNCH">건축 층고 (CH, m)</label><input type="number" id="nCH" value="9.5" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNSlab">슬라브 두께 (m)</label><input type="number" id="nSlab" value="0.2" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNBD">상부 보 깊이 (m)</label><input type="number" id="nBD" value="1.0" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNSpan">기둥 간격 (m)</label><input type="number" id="nSpan" value="11.2" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNColW">기둥 너비 (m)</label><input type="number" id="nColW" value="1.0" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblNColCnt">기둥 총 갯수 (EA)</label><input type="number" id="nColCnt" value="7" step="1" min="2"></div>
+                <div class="input-group"><label data-i18n="lblNGap">기기 간 이격 (m)</label><input type="number" id="nGap" value="0.2" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblNColGap">기둥 이격 (m)</label><input type="number" id="nColGap" value="0.2" step="0.05"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title" data-i18n="secGrid">[건축] 기둥 열(Grid) 관리</div>
+                <div style="display:flex; justify-content: space-between; margin-bottom:8px;">
+                    <button class="btn-small" onclick="addYGrid(1)" data-i18n="btnAddUp">➕ 위로 열 추가</button>
+                    <button class="btn-small" onclick="addYGrid(-1)" data-i18n="btnAddDown">➕ 아래로 열 추가</button>
+                    <button class="btn-small" onclick="removeYGrid()" style="color:var(--accent);" data-i18n="btnDelGrid">➖ 최근 열 삭제</button>
+                </div>
+                <div id="yGridContainer" style="display:flex; flex-direction:column; gap:5px; margin-bottom:5px;">
+                    </div>
+                <div style="font-size: 9px; color:#7f8c8d; text-align:right;">* +1.0 = 위로 1m, -1.0 = 아래로 1m</div>
             </div>
 
             <div class="section">
@@ -78,18 +102,7 @@
                     </select>
                 </div>
             </div>
-
-            <div class="section">
-                <div class="section-title" data-i18n="sec4">[건축] 기둥 및 층고 제원</div>
-                <div class="input-group"><label data-i18n="lblNCH">건축 층고 (CH, m)</label><input type="number" id="nCH" value="9.5" step="0.1"></div>
-                <div class="input-group"><label data-i18n="lblNSlab">슬라브 두께 (m)</label><input type="number" id="nSlab" value="0.2" step="0.05"></div>
-                <div class="input-group"><label data-i18n="lblNBD">상부 보 깊이 (m)</label><input type="number" id="nBD" value="1.0" step="0.1"></div>
-                <div class="input-group"><label data-i18n="lblNSpan">기둥 간격 (m)</label><input type="number" id="nSpan" value="11.2" step="0.1"></div>
-                <div class="input-group"><label data-i18n="lblNColW">기둥 너비 (m)</label><input type="number" id="nColW" value="1.0" step="0.1"></div>
-                <div class="input-group"><label data-i18n="lblNColCnt">기둥 총 갯수 (EA)</label><input type="number" id="nColCnt" value="7" step="1" min="2"></div>
-                <div class="input-group"><label data-i18n="lblNGap">기기 간 이격 (m)</label><input type="number" id="nGap" value="0.2" step="0.05"></div>
-                <div class="input-group"><label data-i18n="lblNColGap">기둥 이격 (m)</label><input type="number" id="nColGap" value="0.2" step="0.05"></div>
-            </div>
+            
         </div>
 
         <div class="panel-summary">

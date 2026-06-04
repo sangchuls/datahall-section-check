@@ -1,10 +1,12 @@
 const translations = {
     ko: {
         title: "Datahall 검토 프로그램",
+        credits: "Developer: Lim Sang Chul | Technical Support: Lee Kyung-ha",
         btnAnimPause: "⏸ 애니메이션 정지", btnAnimPlay: "▶ 애니메이션 재생",
         btnSave: "💾 브라우저 임시저장", btnLoad: "📂 파일 불러오기(.json)", btnExport: "⬇️ 파일 내보내기(.json)",
         sec1: "[종합] 데이터홀 & 설비 배치", lblFwuType: "FWU 갤러리 배치 타입",
         valA: "A (상단)", valB: "B (하단)", valC: "C (상/하 양측)",
+        secGrid: "[건축] 기둥 열(Grid) 관리", btnAddUp: "➕ 위로 열 추가", btnAddDown: "➕ 아래로 열 추가", btnDelGrid: "➖ 최근 열 삭제",
         sec2: "[데이터홀] IT 랙 제원",
         lblRW: "랙 폭 (W, m)", lblRD: "랙 깊이 (D, m)", lblRH: "랙 높이 (H, m)",
         lblRHA: "Hot Aisle (m)", lblRCA: "Cold Aisle (m)", lblRCorridor: "복도 이격 거리 (m)", lblRCnt: "열당 랙 개수 (EA)", lblRRows: "배치 열 수 (EA)",
@@ -28,10 +30,12 @@ const translations = {
     },
     en: {
         title: "Datahall Review Program",
+        credits: "Developer: Lim Sang Chul | Technical Support: Lee Kyung-ha",
         btnAnimPause: "⏸ Pause Anim", btnAnimPlay: "▶ Play Anim",
         btnSave: "💾 Save (Browser)", btnLoad: "📂 Load File (.json)", btnExport: "⬇️ Export File (.json)",
         sec1: "[General] Data Hall & MEP Layout", lblFwuType: "FWU Gallery Layout Type",
         valA: "A (Top)", valB: "B (Bottom)", valC: "C (Top/Bottom)",
+        secGrid: "[Arch] Grid Row Management", btnAddUp: "➕ Add Row (Up)", btnAddDown: "➕ Add Row (Down)", btnDelGrid: "➖ Delete Last Row",
         sec2: "[Data Hall] IT Rack Specs",
         lblRW: "Rack Width (W, m)", lblRD: "Rack Depth (D, m)", lblRH: "Rack Height (H, m)",
         lblRHA: "Hot Aisle (m)", lblRCA: "Cold Aisle (m)", lblRCorridor: "Corridor Gap (m)", lblRCnt: "Racks per Row (EA)", lblRRows: "Number of Rows (EA)",
@@ -65,8 +69,60 @@ function changeLang() {
     });
     const btnAnim = document.getElementById('btnAnimToggle');
     btnAnim.innerText = isAnimRunning ? translations[currentLang].btnAnimPause : translations[currentLang].btnAnimPlay;
+    renderYGridUI();
     calc(); 
 }
+
+let nextGridId = 1;
+let yGrids = [{ id: 'grid_0', label: '기준 열(Base)', val: 0, show: true }];
+
+function renderYGridUI() {
+    const container = document.getElementById('yGridContainer');
+    container.innerHTML = '';
+    yGrids.forEach((g, idx) => {
+        const t = translations[currentLang];
+        let labelName = idx === 0 ? (currentLang === 'ko' ? '기준 열(Base)' : 'Base Grid') : 
+                        (g.val > 0 ? (currentLang === 'ko' ? `추가 열(상)` : `Add Row(Up)`) : (currentLang === 'ko' ? `추가 열(하)` : `Add Row(Down)`));
+        // 💡 [UPDATE] 라벨을 이동(m)로 변경하고 step을 0.5로 설정
+        container.innerHTML += `
+            <div class="input-group">
+                <label>${labelName} 이동(m)</label>
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <input type="number" id="${g.id}" value="${g.val}" step="0.5" onchange="updateYGrid()" style="width:60px;">
+                    <input type="checkbox" id="chk_${g.id}" ${g.show ? 'checked' : ''} onchange="updateYGrid()" title="표시/숨김" style="width:16px; height:16px; margin:0; cursor:pointer;">
+                </div>
+            </div>
+        `;
+    });
+}
+
+function updateYGrid() {
+    yGrids.forEach(g => {
+        const el = document.getElementById(g.id);
+        const chk = document.getElementById('chk_' + g.id);
+        if(el) g.val = parseFloat(el.value) || 0;
+        if(chk) g.show = chk.checked; 
+    });
+    calc();
+}
+
+function addYGrid(dir) {
+    // 💡 [UPDATE] 미터 단위로 10m씩 추가되도록 변경
+    const offset = dir > 0 ? 10.0 : -10.0;
+    yGrids.push({ id: 'grid_' + nextGridId++, label: '', val: offset, show: true });
+    renderYGridUI();
+    calc();
+}
+
+function removeYGrid() {
+    if(yGrids.length > 1) {
+        yGrids.pop();
+        renderYGridUI();
+        calc();
+    }
+}
+
+renderYGridUI();
 
 const elUnits = document.getElementById('nUnits');
 const elPlanUnits = document.getElementById('nPlanUnits');
@@ -128,7 +184,16 @@ function toggleAnimation() {
     }
 }
 
-const svgFan = `<svg viewBox="0 0 24 24" class="fan-svg"><path fill="currentColor" d="M12,11A1,1 0 0,0 11,12A1,1 0 0,0 12,13A1,1 0 0,0 13,12A1,1 0 0,0 12,11M12.5,2C17,2 17.11,5.57 15.75,6.75C14.39,7.93 12.87,7.4 12.87,7.4C12.87,7.4 14.15,10.26 12.5,10.87C11.16,11.36 10.23,9.59 10.23,9.59C10.23,9.59 7.64,11.23 6.64,10.1C5.64,8.96 8.32,7.39 8.32,7.39C8.32,7.39 6.53,5.65 7.64,4.42C8.76,3.19 11.46,4.6 11.46,4.6C11.46,4.6 10.5,2 12.5,2M12,22C7.5,22 7.39,18.43 8.75,17.25C10.11,16.07 11.63,16.6 11.63,16.6C11.63,16.6 10.35,13.74 12,13.13C13.34,12.64 14.27,14.41 14.27,14.41C14.27,14.41 16.86,12.77 17.86,13.9C18.86,15.04 16.18,16.61 16.18,16.61C16.18,16.61 17.97,18.35 16.86,19.58C15.74,20.81 13.04,19.4 13.04,19.4C13.04,19.4 14,22 12,22Z"></path></svg>`;
+const svgFan = `<svg viewBox="0 0 100 100" class="fan-svg">
+    <g fill="currentColor">
+        <path d="M46.5,46.5 C20,20 15,5 35,5 C60,5 65,25 53.5,46.5 Z" />
+        <path d="M46.5,46.5 C20,20 15,5 35,5 C60,5 65,25 53.5,46.5 Z" transform="rotate(90 50 50)" />
+        <path d="M46.5,46.5 C20,20 15,5 35,5 C60,5 65,25 53.5,46.5 Z" transform="rotate(180 50 50)" />
+        <path d="M46.5,46.5 C20,20 15,5 35,5 C60,5 65,25 53.5,46.5 Z" transform="rotate(270 50 50)" />
+    </g>
+    <circle cx="50" cy="50" r="11" fill="white" stroke="currentColor" stroke-width="3"/>
+    <path d="M50,43 L52,47 L56,47 L53,50 L54,54 L50,52 L46,54 L47,50 L44,47 L48,47 Z" fill="currentColor"/>
+</svg>`;
 
 function getFormData() {
     const data = {};
@@ -136,14 +201,20 @@ function getFormData() {
         if(document.getElementById(id)) data[id] = document.getElementById(id).value;
     });
     data.fwuType = document.querySelector('input[name="fwuType"]:checked').value;
+    data.yGrids = yGrids;
     return data;
 }
 
 function setFormData(data) {
     for (let key in data) {
-        if(document.getElementById(key)) document.getElementById(key).value = data[key];
+        if(document.getElementById(key) && key !== 'yGrids') document.getElementById(key).value = data[key];
     }
     if(data.fwuType) document.querySelector(`input[name="fwuType"][value="${data.fwuType}"]`).checked = true;
+    if(data.yGrids && Array.isArray(data.yGrids)) {
+        yGrids = data.yGrids;
+        nextGridId = yGrids.length;
+        renderYGridUI();
+    }
     calc();
 }
 
@@ -489,6 +560,8 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     const t = translations[currentLang];
     const bays = v.nColCnt - 1;
     
+    const anyGridShown = yGrids.some(g => g.show);
+    
     const drawElev = document.getElementById('drawElev');
     const drawPlan = document.getElementById('drawPlan');
     const drawSect = document.getElementById('drawSect');
@@ -509,26 +582,79 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     let topGalleryY = -1;
     let dataHallY = 0;
     let bottomGalleryY = -1;
-    let canvasTotalHeight = 0;
+    let baseCanvasTotalHeight = 0;
 
     if (v.fwuType === 'A') {
         topGalleryY = 0;
         dataHallY = topGalleryY + galleryPhysicalDepth + corridorGap;
-        canvasTotalHeight = dataHallY + dhLength + corridorGap;
+        baseCanvasTotalHeight = dataHallY + dhLength + corridorGap;
     } else if (v.fwuType === 'B') {
         dataHallY = corridorGap;
         bottomGalleryY = dataHallY + dhLength + corridorGap;
-        canvasTotalHeight = bottomGalleryY + galleryPhysicalDepth;
+        baseCanvasTotalHeight = bottomGalleryY + galleryPhysicalDepth;
     } else if (v.fwuType === 'C') {
         topGalleryY = 0;
         dataHallY = topGalleryY + galleryPhysicalDepth + corridorGap;
         bottomGalleryY = dataHallY + dhLength + corridorGap;
-        canvasTotalHeight = bottomGalleryY + galleryPhysicalDepth;
+        baseCanvasTotalHeight = bottomGalleryY + galleryPhysicalDepth;
     }
+
+    let maxYGridUpOffset = 0; 
+    let minYGridDownOffset = 0;
+    yGrids.forEach(g => {
+        // 💡 [UPDATE] 미터 단위로 계산 (/ 1000 제거)
+        const offsetPx = g.val * BASE_SCALE;
+        if(offsetPx > maxYGridUpOffset) maxYGridUpOffset = offsetPx; 
+        if(offsetPx < minYGridDownOffset) minYGridDownOffset = offsetPx; 
+    });
+    
+    const globalYOffset = maxYGridUpOffset + (1.0 * BASE_SCALE); 
+    const canvasTotalHeight = baseCanvasTotalHeight + maxYGridUpOffset + Math.abs(minYGridDownOffset) + (2.0 * BASE_SCALE);
+    
+    topGalleryY = topGalleryY >= 0 ? topGalleryY + globalYOffset : -1;
+    dataHallY += globalYOffset;
+    bottomGalleryY = bottomGalleryY >= 0 ? bottomGalleryY + globalYOffset : -1;
+    
+    const baseColLineY = (v.fwuType === 'A' || v.fwuType === 'C') ? topGalleryY : bottomGalleryY;
 
     drawPlan.style.width = (totalDrawingWidth * BASE_SCALE) + 'px';
     drawPlan.style.height = canvasTotalHeight + 'px'; 
     let animDuration = 2.6 / (saVel > 0.1 ? saVel : 0.1);
+
+    yGrids.forEach(grid => {
+        if (grid.show) {
+            // 💡 [UPDATE] 미터 단위로 계산
+            const offsetPx = grid.val * BASE_SCALE;
+            const colY = baseColLineY - offsetPx;
+            
+            const hCenterLine = document.createElement('div');
+            hCenterLine.className = 'center-line-h';
+            hCenterLine.style.top = (colY + (v.nColW * BASE_SCALE)/2) + 'px';
+            drawPlan.appendChild(hCenterLine);
+
+            for(let i = 0; i < v.nColCnt; i++) {
+                const colX = i * v.nSpan * BASE_SCALE; 
+                
+                const planCol = document.createElement('div');
+                planCol.className = 'col-block';
+                planCol.style.left = colX + 'px';
+                planCol.style.top = colY + 'px';
+                planCol.style.width = (v.nColW * BASE_SCALE) + 'px';
+                planCol.style.height = (v.nColW * BASE_SCALE) + 'px';
+                drawPlan.appendChild(planCol);
+            }
+        }
+    });
+
+    if (anyGridShown) {
+        for(let i = 0; i < v.nColCnt; i++) {
+            const colX = i * v.nSpan * BASE_SCALE; 
+            const vCenterLine = document.createElement('div');
+            vCenterLine.className = 'center-line-v';
+            vCenterLine.style.left = (colX + (v.nColW * BASE_SCALE)/2) + 'px';
+            drawPlan.appendChild(vCenterLine);
+        }
+    }
 
     const pairs = Math.ceil(v.rRows / 2);
     const dataHallTotalW = (pairs * (v.rD * 2 + v.rHA) + (pairs * v.rCA)) * BASE_SCALE;
@@ -647,30 +773,28 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
         sectFwu.innerText = 'FWU';
         drawSect.appendChild(sectFwu);
 
-        let sectBeam = document.createElement('div');
-        sectBeam.className = 'sect-beam';
-        sectBeam.style.left = sectColY + 'px';
-        sectBeam.style.top = (v.nSlab * BASE_SCALE) + 'px'; 
-        sectBeam.style.width = (v.nColW * BASE_SCALE) + 'px';
-        sectBeam.style.height = (v.nBD * BASE_SCALE) + 'px';
-        sectBeam.innerText = t.lblBeam;
-        drawSect.appendChild(sectBeam);
+        if (anyGridShown) {
+            let sectBeam = document.createElement('div');
+            sectBeam.className = 'sect-beam';
+            sectBeam.style.left = sectColY + 'px';
+            sectBeam.style.top = (v.nSlab * BASE_SCALE) + 'px'; 
+            sectBeam.style.width = (v.nColW * BASE_SCALE) + 'px';
+            sectBeam.style.height = (v.nBD * BASE_SCALE) + 'px';
+            sectBeam.innerText = t.lblBeam;
+            drawSect.appendChild(sectBeam);
+        }
 
-        // 💡 [UPDATE] 단면도 RA 화살표 방향 및 위치 재조정 (SA와 반대)
         if (raSpace > 0) {
             const raArrow = document.createElement('div');
-            // 상단 갤러리(Top)일 경우 RA는 왼쪽으로(FWU로), 하단(Bottom)일 경우 오른쪽으로(FWU로)
             raArrow.className = isTop ? 'flow-arrow ra move-left' : 'flow-arrow ra move-right';
-            raArrow.innerHTML = isTop ? `← RA ${raVelocity.toFixed(1)}m/s (35°C)` : `RA ${raVelocity.toFixed(1)}m/s (35°C) →`;
+            raArrow.innerHTML = isTop ? `← RA ${raVelocity.toFixed(1)}m/s` : `RA ${raVelocity.toFixed(1)}m/s →`;
             
-            // X 위치도 빔 기준 안쪽(데이터홀 방향)으로 고정 배치
             const arrowX = isTop ? (sectColY + v.nColW*BASE_SCALE + 20) : (sectColY - 140);
             raArrow.style.left = arrowX + 'px';
             raArrow.style.bottom = ((v.nSlab * BASE_SCALE) + (totalFwuH + raSpace/2)*BASE_SCALE - 8) + 'px';
             drawSect.appendChild(raArrow);
         }
 
-        // 💡 [UPDATE] 단면도 SA 화살표 방향 및 위치 재조정
         const saArrow = document.createElement('div');
         saArrow.className = isTop ? 'flow-arrow sa move-right' : 'flow-arrow sa move-left';
         saArrow.innerHTML = isTop ? `SA ${saVel.toFixed(1)}m/s (22°C) →` : `← SA ${saVel.toFixed(1)}m/s (22°C)`;
@@ -683,34 +807,30 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
         for(let i = 0; i < v.nColCnt; i++) {
             const colX = i * v.nSpan * BASE_SCALE; 
             
-            if(isTop || (!isTop && v.fwuType === 'B')) {
-                const elevCol = document.createElement('div');
-                elevCol.className = 'col-block';
-                elevCol.style.left = colX + 'px';
-                elevCol.style.bottom = (v.nSlab * BASE_SCALE) + 'px';
-                elevCol.style.width = (v.nColW * BASE_SCALE) + 'px';
-                elevCol.style.height = (v.nCH * BASE_SCALE) + 'px';
-                drawElev.appendChild(elevCol);
+            if (anyGridShown) {
+                if(isTop || (!isTop && v.fwuType === 'B')) {
+                    const elevCol = document.createElement('div');
+                    elevCol.className = 'col-block';
+                    elevCol.style.left = colX + 'px';
+                    elevCol.style.bottom = (v.nSlab * BASE_SCALE) + 'px';
+                    elevCol.style.width = (v.nColW * BASE_SCALE) + 'px';
+                    elevCol.style.height = (v.nCH * BASE_SCALE) + 'px';
+                    drawElev.appendChild(elevCol);
+                }
             }
 
-            const planCol = document.createElement('div');
-            planCol.className = 'col-block';
-            planCol.style.left = colX + 'px';
-            planCol.style.top = offsetY + 'px';
-            planCol.style.width = (v.nColW * BASE_SCALE) + 'px';
-            planCol.style.height = (v.nColW * BASE_SCALE) + 'px';
-            drawPlan.appendChild(planCol);
-
             if(i < v.nColCnt - 1) {
-                if(isTop || (!isTop && v.fwuType === 'B')) {
-                    const beam = document.createElement('div');
-                    beam.className = 'beam-block';
-                    beam.style.left = colX + 'px';
-                    beam.style.top = (v.nSlab * BASE_SCALE) + 'px'; 
-                    beam.style.width = (v.nSpan * BASE_SCALE) + 'px'; 
-                    beam.style.height = (v.nBD * BASE_SCALE) + 'px';
-                    beam.innerText = t.lblBeam;
-                    drawElev.appendChild(beam);
+                if (anyGridShown) {
+                    if(isTop || (!isTop && v.fwuType === 'B')) {
+                        const beam = document.createElement('div');
+                        beam.className = 'beam-block';
+                        beam.style.left = colX + 'px';
+                        beam.style.top = (v.nSlab * BASE_SCALE) + 'px'; 
+                        beam.style.width = (v.nSpan * BASE_SCALE) + 'px'; 
+                        beam.style.height = (v.nBD * BASE_SCALE) + 'px';
+                        beam.innerText = t.lblBeam;
+                        drawElev.appendChild(beam);
+                    }
                 }
 
                 let bayEquips = bayDistributions[i] || [];
@@ -759,6 +879,7 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                         air.style.width = (eqW * BASE_SCALE) + 'px';
                         air.style.height = airFlowDepth + 'px';
                         air.style.animationDuration = eq.isCatcher ? (animDuration * 4) + 's' : animDuration + 's'; 
+                        
                         air.innerHTML = `<span style="display:block; text-align:center; padding-top:4px;">SA ${v.nVel}m/s (22°C)</span>`;
                         drawPlan.appendChild(air);
                         
@@ -771,7 +892,8 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                                 fwuElev.style.bottom = ((v.nSlab * BASE_SCALE) + (tNum * unitH * BASE_SCALE)) + 'px';
                                 fwuElev.style.width = (eqW * BASE_SCALE) + 'px';
                                 fwuElev.style.height = (unitH * BASE_SCALE) + 'px';
-                                fwuElev.innerHTML = svgFan + `<span class="fwu-label">${labelText}</span>`;
+                                
+                                fwuElev.innerHTML = svgFan + `<span class="fwu-label">${labelText}<br><span style="color:#3498db; font-size:7px;">SA ${v.nVel}m/s</span></span>`;
                                 fwuElev.querySelector('.fan-svg').style.animation = fanAnim;
                                 drawElev.appendChild(fwuElev);
                             }
@@ -791,6 +913,25 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                     }
                     
                     currentEqX += (eqW + v.nGap) * BASE_SCALE;
+                }
+
+                if(isTop || (!isTop && v.fwuType === 'B')) {
+                    const raElev = document.createElement('div');
+                    raElev.className = raSpace < 0 ? 'ra-space error' : 'ra-space';
+                    raElev.style.left = (colX + v.nColW * BASE_SCALE) + 'px';
+                    raElev.style.bottom = ((v.nSlab * BASE_SCALE) + (totalFwuH * BASE_SCALE)) + 'px';
+                    raElev.style.width = (clearSpan * BASE_SCALE) + 'px';
+                    
+                    if(raSpace >= 0) { 
+                        raElev.style.height = (raSpace * BASE_SCALE) + 'px'; 
+                        raElev.innerHTML = `RA ${raVelocity.toFixed(1)}m/s`; 
+                    } 
+                    else { 
+                        raElev.style.height = (Math.abs(raSpace) * BASE_SCALE) + 'px'; 
+                        raElev.style.bottom = ((v.nSlab * BASE_SCALE) + (totalFwuH + raSpace) * BASE_SCALE) + 'px'; 
+                        raElev.innerText = t.clash; 
+                    }
+                    drawElev.appendChild(raElev);
                 }
             }
         }
