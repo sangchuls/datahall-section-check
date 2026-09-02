@@ -15,6 +15,8 @@ const translations = {
         lblNUnits: "AC 유효 대수 (N)", lblNPlanUnits: "AC 총 댓수 (열)", lblNCatcher: "AC 캐쳐(예비) (열)",
         lblNW: "AC 개구부 폭 (m)", lblNRatio: "AC 유효 개구율", lblNVel: "AC SA 풍속(m/s)", lblNTiers: "적층 (Tiers)",
         lblAcRatio: "AC 담당 비율 (%)", lblLcRatio: "LC 담당 비율 (%)", lblCduCap: "CDU 용량 (kW)", lblCduW: "CDU 폭 (m)", lblCduCatcher: "CDU 예비 대수 (EA)",
+        lblCduLoc: "CDU 배치 위치", valCduGallery: "갤러리(항온항습실)", valCduHall: "데이터홀 랙열 끝단",
+        lblAcHMode: "AC 높이 산출 방식", valHAuto: "자동 (풍속 기준)", valHManual: "수동 (높이 지정)", valHCount: "대수 산출 (H·V 고정)", lblNUnitH: "AC 1대 높이 (m)",
         valT1: "1단", valT2: "2단", valT3: "3단",
         sec4: "[건축] 기둥 및 층고 제원",
         lblNCH: "건축 층고 (CH, m)", lblNSlab: "슬라브 두께 (m)", lblNBD: "상부 보 깊이 (m)", lblNSpan: "기둥 간격 (m)",
@@ -25,6 +27,9 @@ const translations = {
         form1Title: "1. IT부하 및 랙 밀도", form1Racks: "총 랙", form1Dens: "밀도", form2Title: "2. 데이터홀 Containment Pitch",
         form3Title: "3. 필요 총 풍량 (AC)", form3LcTitle: "4. 필요 CDU 대수 (LC)", form4Title: "5. FWU 요구 높이 (H)", form4Type: "타입", form4Units: "총 유효대수", form4Air: "1대당 풍량", form4Req: "요구H",
         form5Title: "6. 보 밑 RA공간", form5Clear: "순층고", form5Equip: "장비총고",
+        form4Mode: "산출", form4ModeAuto: "자동(풍속 고정)", form4ModeManual: "수동(높이 고정)", form4ModeCount: "대수 산출(H·V 고정)", form4Vel: "환산 SA 풍속",
+        form4Solved: "산출 대수", form4Cap: "갤러리 수용", form4Over: "열 초과", form4Hint: "적층 단수↑ 또는 1대 높이↓ 필요", form4Row: "열",
+        formLcLoc: "배치", formLcAddLen: "홀 길이 증가", formLcPerRow: "열당 최대", formLcRows: "적용 열 수",
         msgSave: "설정값이 브라우저 임시저장소에 저장되었습니다.", msgLoadOk: "파일을 성공적으로 불러왔습니다.", msgLoadErr: "파일을 읽는 중 오류가 발생했습니다.",
         lblStandby: "Standby", lblCatcher: "Catcher", lblRacks: "IT Racks", lblBeam: "Beam", lblFloorSlab: "FLOOR SLAB", lblCeilSlab: "CEILING SLAB", clash: "간섭"
     },
@@ -44,6 +49,8 @@ const translations = {
         lblNUnits: "AC Active Units (N)", lblNPlanUnits: "AC Total Units (Rows)", lblNCatcher: "AC Catcher (Rows)",
         lblNW: "AC Opening W(m)", lblNRatio: "Effective Ratio", lblNVel: "SA Velocity (m/s)", lblNTiers: "Tiers",
         lblAcRatio: "AC Load Ratio (%)", lblLcRatio: "LC Load Ratio (%)", lblCduCap: "CDU Capacity (kW)", lblCduW: "CDU Width (m)", lblCduCatcher: "CDU Standby (EA)",
+        lblCduLoc: "CDU Location", valCduGallery: "Gallery (CRAH Room)", valCduHall: "Data Hall (Row End)",
+        lblAcHMode: "AC Height Mode", valHAuto: "Auto (by Velocity)", valHManual: "Manual (Fixed H)", valHCount: "Solve Count (fixed H·V)", lblNUnitH: "AC Unit Height (m)",
         valT1: "1 Tier", valT2: "2 Tiers", valT3: "3 Tiers",
         sec4: "[Arch] Column & Ceiling Specs",
         lblNCH: "Ceiling Height (CH, m)", lblNSlab: "Slab Thickness (m)", lblNBD: "Beam Depth (m)", lblNSpan: "Column Span (m)",
@@ -54,6 +61,9 @@ const translations = {
         form1Title: "1. IT Load & Rack Density", form1Racks: "Total Racks", form1Dens: "Density", form2Title: "2. Data Hall Containment Pitch",
         form3Title: "3. Required Airflow (AC)", form3LcTitle: "4. Required CDU (LC)", form4Title: "5. Required FWU Height (H)", form4Type: "Type", form4Units: "Total Active Units", form4Air: "Airflow/unit", form4Req: "Req. H",
         form5Title: "6. RA Space under Beam", form5Clear: "Clear Height", form5Equip: "Total Equip H",
+        form4Mode: "Mode", form4ModeAuto: "Auto (fixed velocity)", form4ModeManual: "Manual (fixed height)", form4ModeCount: "Solve Count (fixed H·V)", form4Vel: "Resulting SA Velocity",
+        form4Solved: "Solved Units", form4Cap: "Gallery Capacity", form4Over: "rows over", form4Hint: "increase tiers or reduce unit height", form4Row: "rows",
+        formLcLoc: "Location", formLcAddLen: "Added Hall Length", formLcPerRow: "Max per Row", formLcRows: "Rows Used",
         msgSave: "Settings saved to browser local storage.", msgLoadOk: "File loaded successfully.", msgLoadErr: "Error reading file.",
         lblStandby: "Standby", lblCatcher: "Catcher", lblRacks: "IT Racks", lblBeam: "Beam", lblFloorSlab: "FLOOR SLAB", lblCeilSlab: "CEILING SLAB", clash: "Clash"
     }
@@ -161,13 +171,50 @@ document.querySelectorAll('input[name="fwuType"]').forEach(radio => {
     radio.addEventListener('change', calc);
 });
 
-const inputsList = ['rW', 'rD', 'rH', 'rHA', 'rCA', 'rCorridor', 'rCnt', 'rRows', 'nKw', 'acRatio', 'lcRatio', 'cduCap', 'cduCatcher', 'cduW', 'nCfm','nMargin','nW','nRatio','nVel','nCH','nSlab','nBD','nSpan','nColW','nColCnt','nGap', 'nColGap'];
+const inputsList = ['rW', 'rD', 'rH', 'rHA', 'rCA', 'rCorridor', 'rCnt', 'rRows', 'nKw', 'acRatio', 'lcRatio', 'cduCap', 'cduCatcher', 'cduW', 'nCfm','nMargin','nW','nRatio','nVel','nUnitH','nCH','nSlab','nBD','nSpan','nColW','nColCnt','nGap', 'nColGap'];
 const allInputs = [...inputsList, 'nUnits', 'nPlanUnits', 'nCatcher', 'nTiers'];
+// 문자열 값을 갖는 select들 (parseFloat 대상에서 제외)
+const selectInputs = ['acHMode', 'cduLoc'];
 
 inputsList.forEach(id => {
     document.getElementById(id).addEventListener('input', calc);
     document.getElementById(id).addEventListener('change', calc);
 });
+
+const elAcHMode = document.getElementById('acHMode');
+const elUnitHManual = document.getElementById('nUnitH');
+const elVel = document.getElementById('nVel');
+
+// AC 산출 방식에 따라 어느 필드가 입력값이고 어느 필드가 산출값인지 전환
+//   auto   : 풍속 입력  → 1대 높이 산출
+//   manual : 높이 입력  → 환산 풍속 산출
+//   count  : 높이·풍속 입력 → 대수(N, 열) 산출
+function applyAcHeightMode() {
+    const mode = elAcHMode.value;
+    const manual = (mode === 'manual');
+    const count  = (mode === 'count');
+    const hIsInput = manual || count;
+
+    elVel.disabled = manual;
+    elVel.classList.toggle('derived-input', manual);
+
+    elUnitHManual.disabled = !hIsInput;
+    elUnitHManual.classList.toggle('highlight-input', hIsInput);
+    elUnitHManual.classList.toggle('derived-input', !hIsInput);
+
+    elUnits.disabled = count;
+    elPlanUnits.disabled = count;
+    elUnits.classList.toggle('derived-input', count);
+    elPlanUnits.classList.toggle('derived-input', count);
+    if (!count) {
+        elUnits.classList.remove('over-capacity');
+        elPlanUnits.classList.remove('over-capacity');
+    }
+}
+
+elAcHMode.addEventListener('change', () => { applyAcHeightMode(); calc(); });
+document.getElementById('cduLoc').addEventListener('change', calc);
+applyAcHeightMode();
 
 window.addEventListener('resize', autoScaleDrawing);
 
@@ -200,6 +247,9 @@ function getFormData() {
     allInputs.forEach(id => {
         if(document.getElementById(id)) data[id] = document.getElementById(id).value;
     });
+    selectInputs.forEach(id => {
+        if(document.getElementById(id)) data[id] = document.getElementById(id).value;
+    });
     data.fwuType = document.querySelector('input[name="fwuType"]:checked').value;
     data.yGrids = yGrids;
     return data;
@@ -215,6 +265,7 @@ function setFormData(data) {
         nextGridId = yGrids.length;
         renderYGridUI();
     }
+    applyAcHeightMode();
     calc();
 }
 
@@ -468,6 +519,8 @@ function calc() {
     const v = {};
     allInputs.forEach(id => v[id] = parseFloat(document.getElementById(id).value) || 0);
     v.fwuType = document.querySelector('input[name="fwuType"]:checked').value; 
+    v.acHMode = document.getElementById('acHMode').value;
+    v.cduLoc = document.getElementById('cduLoc').value;
     
     const totalRacks = v.rCnt * v.rRows;
     const rackDensity = totalRacks > 0 ? (v.nKw / totalRacks) : 0;
@@ -477,17 +530,51 @@ function calc() {
     const lcLoad = v.nKw * (v.lcRatio / 100);
 
     const gallerySideMultiplier = (v.fwuType === 'C') ? 2 : 1;
-    const totalActiveUnits = (v.nUnits > 0 ? v.nUnits : 1) * gallerySideMultiplier;
-    
     const totalCmh = acLoad * v.nCfm * 1.699 * v.nMargin;
-    const unitCmh = totalCmh / totalActiveUnits; 
-    const unitH = unitCmh / (v.nW * v.nRatio * v.nVel * 3600);
+    const openingArea = v.nW * v.nRatio * 3600; // 개구면적(m2) × s/h
+
+    const isManualH   = (v.acHMode === 'manual');
+    const isCountMode = (v.acHMode === 'count');
+
+    // [대수 산출] 높이·풍속을 고정하고 필요 대수를 역산 (LC의 CDU 대수 산출과 같은 방향)
+    if (isCountMode) {
+        const perUnitCmh = openingArea * v.nVel * v.nUnitH;
+        v.nUnits = perUnitCmh > 0 ? Math.ceil(totalCmh / perUnitCmh / gallerySideMultiplier) : 0;
+        v.nPlanUnits = Math.ceil(v.nUnits / (v.nTiers > 0 ? v.nTiers : 1)) + v.nCatcher;
+        elUnits.value = v.nUnits;
+        elPlanUnits.value = v.nPlanUnits;
+    }
+
+    const totalActiveUnits = (v.nUnits > 0 ? v.nUnits : 1) * gallerySideMultiplier;
+    const unitCmh = totalCmh / totalActiveUnits;
+
+    // AC 1대 높이: 자동(풍속 고정 → 높이 산출) / 수동·대수산출(높이 고정 → 풍속 역산)
+    const autoUnitH = (openingArea > 0 && v.nVel > 0) ? unitCmh / (openingArea * v.nVel) : 0;
+    const hIsInput = isManualH || isCountMode;
+    const unitH = hIsInput ? (v.nUnitH > 0 ? v.nUnitH : autoUnitH) : autoUnitH;
+    const saVel = hIsInput
+        ? ((openingArea > 0 && unitH > 0) ? unitCmh / (openingArea * unitH) : 0)
+        : v.nVel;
+
+    // 입력이 아닌 쪽(비활성 필드)에 산출값을 되돌려 표시
+    if (isManualH) elVel.value = saVel.toFixed(2);
+    if (!hIsInput) elUnitHManual.value = unitH.toFixed(2);
+
     const totalFwuH = unitH * v.nTiers;
 
     const cduReqKw = lcLoad * v.nMargin;
-    const cduActive = Math.ceil(cduReqKw / v.cduCap);
+    const cduActive = v.cduCap > 0 ? Math.ceil(cduReqKw / v.cduCap) : 0;
     const cduTotal = cduActive + v.cduCatcher;
-    const cduPerSide = Math.ceil(cduTotal / gallerySideMultiplier);
+    const cduInGallery = (v.cduLoc === 'gallery');
+    const cduPerSide = cduInGallery ? Math.ceil(cduTotal / gallerySideMultiplier) : 0;
+
+    // 데이터홀 랙열 끝단 배치 시: 도면에 그려지는 랙 열 수에 균등 분배
+    const hallRowCount = Math.max(1, Math.ceil(v.rRows / 2) * 2);
+    const hallCduTotal = cduInGallery ? 0 : cduTotal;
+    const hallPerRowMax = hallCduTotal > 0 ? Math.ceil(hallCduTotal / hallRowCount) : 0;
+    const hallRowsUsed = Math.min(hallRowCount, hallCduTotal);
+    const hallCduLen = hallPerRowMax > 0 ? (hallPerRowMax * v.cduW + (hallPerRowMax - 1) * v.nGap) : 0;
+    const hallCdu = { total: hallCduTotal, perRowMax: hallPerRowMax, rowsUsed: hallRowsUsed, len: hallCduLen, rowCount: hallRowCount, catcher: cduInGallery ? 0 : v.cduCatcher };
 
     const totalRows = v.nPlanUnits; 
     const bays = v.nColCnt - 1; 
@@ -510,6 +597,17 @@ function calc() {
     const clearSpan = v.nSpan - v.nColW; 
     const requiredClearW = maxEqBayW + (v.nColGap * 2); 
     const isPlanFit = requiredClearW <= clearSpan;
+
+    // 갤러리가 수용 가능한 AC 열 수 (대수 산출 모드의 초과 경고용)
+    const cduPerBay = bays > 0 ? Math.ceil(cduPerSide / bays) : 0;
+    const bayFreeW = clearSpan - (v.nColGap * 2) - (cduPerBay * (v.cduW + v.nGap));
+    const rowPitch = v.nW + v.nGap;
+    const rowsPerBay = rowPitch > 0 ? Math.max(0, Math.floor((bayFreeW + v.nGap) / rowPitch)) : 0;
+    const galleryRowCapacity = rowsPerBay * bays;
+    const rowOverflow = Math.max(0, v.nPlanUnits - galleryRowCapacity);
+
+    elUnits.classList.toggle('over-capacity', isCountMode && rowOverflow > 0);
+    elPlanUnits.classList.toggle('over-capacity', isCountMode && rowOverflow > 0);
 
     const clearHeight = v.nCH - v.nSlab - v.nBD; 
     const raSpace = clearHeight - totalFwuH; 
@@ -545,17 +643,17 @@ function calc() {
         <div class="f-item"><b>${t.form1Title}:</b><br>${t.form1Racks}: ${totalRacks} EA ➔ ${t.form1Dens}: <b>${rackDensity.toFixed(2)} kW/Rack</b></div>
         <div class="f-item"><b>${t.form2Title}:</b><br>HA(${v.rHA}) + Rack(${v.rD}×2) + CA(${v.rCA}) = <code style="color:#27ae60;">${pitch.toFixed(2)} m</code></div>
         <div class="f-item"><b>${t.form3Title}:</b><br>${v.nKw}kW × ${v.acRatio}% = ${acLoad.toFixed(1)}kW<br>${acLoad.toFixed(1)}kW × ${v.nCfm}CFM/kW × 1.699 × ${v.nMargin} = <b>${Math.round(totalCmh).toLocaleString()} CMH</b></div>
-        <div class="f-item"><b>${t.form3LcTitle}:</b><br>${v.nKw}kW × ${v.lcRatio}% × ${v.nMargin} = ${cduReqKw.toFixed(1)}kW<br>${cduReqKw.toFixed(1)}kW / ${v.cduCap}kW = <b>${cduActive} + ${v.cduCatcher}대(예비) = ${cduTotal}대</b></div>
-        <div class="f-item"><b>${t.form4Title}:</b><br>${t.form4Type} <b>Type ${v.fwuType}</b> ➔ ${t.form4Units}: ${v.nUnits}×${gallerySideMultiplier} = <b>${totalActiveUnits} EA</b><br>${t.form4Air}: ${Math.round(unitCmh).toLocaleString()} CMH ➔ ${t.form4Req}: <code style="color:#c0392b;">${unitH.toFixed(2)} m</code></div>
+        <div class="f-item"><b>${t.form3LcTitle}:</b><br>${v.nKw}kW × ${v.lcRatio}% × ${v.nMargin} = ${cduReqKw.toFixed(1)}kW<br>${cduReqKw.toFixed(1)}kW / ${v.cduCap}kW = <b>${cduActive} + ${v.cduCatcher}대(예비) = ${cduTotal}대</b><br>${t.formLcLoc}: <b style="color:#27ae60;">${cduInGallery ? t.valCduGallery : t.valCduHall}</b>${cduInGallery ? '' : `<br>${t.formLcRows}: ${hallCdu.rowsUsed} / ${hallCdu.rowCount} (${t.formLcPerRow} ${hallCdu.perRowMax}EA) → ${t.formLcAddLen}: <code style="color:#c0392b;">${hallCdu.len.toFixed(2)} m</code>`}</div>
+        <div class="f-item"><b>${t.form4Title}:</b><br>${t.form4Type} <b>Type ${v.fwuType}</b> ➔ ${t.form4Units}: ${v.nUnits}×${gallerySideMultiplier} = <b>${totalActiveUnits} EA</b><br>${t.form4Air}: ${Math.round(unitCmh).toLocaleString()} CMH ➔ ${t.form4Req}: <code style="color:#c0392b;">${unitH.toFixed(2)} m</code><br>${t.form4Mode}: <b>${isCountMode ? t.form4ModeCount : (isManualH ? t.form4ModeManual : t.form4ModeAuto)}</b> → ${t.form4Vel}: <code style="color:${saVel > 4 ? '#c0392b' : '#2980b9'};">${saVel.toFixed(2)} m/s</code>${isCountMode ? `<br>${t.form4Solved}: <b>${v.nUnits}×${gallerySideMultiplier} EA</b> (${v.nPlanUnits}${t.form4Row}) / ${t.form4Cap}: ${galleryRowCapacity}${t.form4Row} ${rowOverflow > 0 ? `<b style="color:#c0392b;">▲ ${rowOverflow}${t.form4Over} — ${t.form4Hint}</b>` : '<b style="color:#27ae60;">OK</b>'}` : ''}</div>
         <div class="f-item"><b>${t.form5Title}:</b><br>${t.form5Clear}(${v.nCH}-${v.nSlab}-${v.nBD}m) - ${t.form5Equip}(${totalFwuH.toFixed(2)}m) = <b>${raSpace.toFixed(2)} m</b></div>
     `;
 
-    renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, v.nVel, raVelocity);
+    renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, saVel, raVelocity, hallCdu);
 }
 
 const BASE_SCALE = 40; 
 
-function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, saVel, raVelocity) {
+function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, saVel, raVelocity, hallCdu) {
     const totalDrawingWidth = ((v.nColCnt - 1) * v.nSpan) + v.nColW;
     const t = translations[currentLang];
     const bays = v.nColCnt - 1;
@@ -577,7 +675,11 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     
     const galleryPhysicalDepth = (v.nColW * BASE_SCALE); 
     const corridorGap = v.rCorridor * BASE_SCALE; 
-    const dhLength = v.rCnt * v.rW * BASE_SCALE; 
+    // 랙 영역 + (데이터홀 배치 시) 랙열 끝단 CDU 영역
+    const rackAreaLen = v.rCnt * v.rW * BASE_SCALE;
+    const hallCduPx = (hallCdu ? hallCdu.len : 0) * BASE_SCALE;
+    const hallCduDepth = 1.2 * BASE_SCALE;
+    const dhLength = rackAreaLen + hallCduPx; 
     
     let topGalleryY = -1;
     let dataHallY = 0;
@@ -660,6 +762,37 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     const dataHallTotalW = (pairs * (v.rD * 2 + v.rHA) + (pairs * v.rCA)) * BASE_SCALE;
     const dhStartX = (totalDrawingWidth * BASE_SCALE - dataHallTotalW) / 2;
 
+    const rackStartY = dataHallY + hallCduPx;
+
+    // 랙열 끝단 CDU: 그려지는 랙 열에 균등 분배 (앞쪽 열부터 1대씩 더), 랙에 붙여 정렬
+    let hallCduQueue = [];
+    if (hallCdu && hallCdu.total > 0) {
+        for (let i = 0; i < hallCdu.total; i++) hallCduQueue.push({ isCatcher: i >= (hallCdu.total - hallCdu.catcher) });
+    }
+    let hallRowsLeft = hallCdu ? hallCdu.rowCount : 0;
+
+    const drawRowEndCdu = (rowX) => {
+        if (hallRowsLeft <= 0) return;
+        const n = hallCduQueue.length > 0 ? Math.ceil(hallCduQueue.length / hallRowsLeft) : 0;
+        hallRowsLeft--;
+        if (n <= 0) return;
+        const blockLen = (n * v.cduW + Math.max(0, n - 1) * v.nGap) * BASE_SCALE;
+        const cduX = rowX + (v.rD * BASE_SCALE - hallCduDepth) / 2;
+        let y = rackStartY - blockLen;
+        for (let c = 0; c < n; c++) {
+            const unit = hallCduQueue.shift();
+            const el = document.createElement('div');
+            el.className = 'cdu-block inhall' + (unit.isCatcher ? ' catcher' : '');
+            el.style.left = cduX + 'px';
+            el.style.top = y + 'px';
+            el.style.width = hallCduDepth + 'px';
+            el.style.height = (v.cduW * BASE_SCALE) + 'px';
+            el.innerHTML = `<span class="fwu-label">${unit.isCatcher ? t.lblCatcher : 'CDU'}</span>`;
+            drawPlan.appendChild(el);
+            y += (v.cduW + v.nGap) * BASE_SCALE;
+        }
+    };
+
     let currentX = dhStartX;
     for (let s = 0; s < pairs; s++) {
         if (s === 0) {
@@ -676,20 +809,13 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
             let rack = document.createElement('div');
             rack.className = 'rack-block';
             rack.style.left = currentX + 'px';
-            rack.style.top = (dataHallY + k * v.rW * BASE_SCALE) + 'px';
+            rack.style.top = (rackStartY + k * v.rW * BASE_SCALE) + 'px';
             rack.style.width = (v.rD * BASE_SCALE) + 'px'; 
             rack.style.height = (v.rW * BASE_SCALE) + 'px';
             drawPlan.appendChild(rack);
         }
         
-        let sectRack1 = document.createElement('div');
-        sectRack1.className = 'sect-rack';
-        sectRack1.style.left = dataHallY + 'px';
-        sectRack1.style.bottom = (v.nSlab * BASE_SCALE) + 'px'; 
-        sectRack1.style.width = dhLength + 'px';
-        sectRack1.style.height = (v.rH * BASE_SCALE) + 'px';
-        sectRack1.innerText = t.lblRacks;
-        drawSect.appendChild(sectRack1);
+        drawRowEndCdu(currentX);
 
         currentX += (v.rD * BASE_SCALE); 
 
@@ -705,11 +831,12 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
             let rack = document.createElement('div');
             rack.className = 'rack-block';
             rack.style.left = currentX + 'px';
-            rack.style.top = (dataHallY + k * v.rW * BASE_SCALE) + 'px';
+            rack.style.top = (rackStartY + k * v.rW * BASE_SCALE) + 'px';
             rack.style.width = (v.rD * BASE_SCALE) + 'px'; 
             rack.style.height = (v.rW * BASE_SCALE) + 'px';
             drawPlan.appendChild(rack);
         }
+        drawRowEndCdu(currentX);
         currentX += (v.rD * BASE_SCALE); 
 
         if (s < pairs - 1) {
@@ -880,7 +1007,7 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                         air.style.height = airFlowDepth + 'px';
                         air.style.animationDuration = eq.isCatcher ? (animDuration * 4) + 's' : animDuration + 's'; 
                         
-                        air.innerHTML = `<span style="display:block; text-align:center; padding-top:4px;">SA ${v.nVel}m/s (22°C)</span>`;
+                        air.innerHTML = `<span style="display:block; text-align:center; padding-top:4px;">SA ${saVel.toFixed(1)}m/s (22°C)</span>`;
                         drawPlan.appendChild(air);
                         
                         if(isTop || (!isTop && v.fwuType === 'B')) {
@@ -893,7 +1020,7 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                                 fwuElev.style.width = (eqW * BASE_SCALE) + 'px';
                                 fwuElev.style.height = (unitH * BASE_SCALE) + 'px';
                                 
-                                fwuElev.innerHTML = svgFan + `<span class="fwu-label">${labelText}<br><span style="color:#3498db; font-size:7px;">SA ${v.nVel}m/s</span></span>`;
+                                fwuElev.innerHTML = svgFan + `<span class="fwu-label">${labelText}<br><span style="color:#3498db; font-size:7px;">SA ${saVel.toFixed(1)}m/s</span></span>`;
                                 fwuElev.querySelector('.fan-svg').style.animation = fanAnim;
                                 drawElev.appendChild(fwuElev);
                             }
@@ -936,6 +1063,27 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
             }
         }
     };
+
+    // SECTION: 데이터홀 랙 + (해당 시) 랙열 끝단 CDU
+    const sectRacks = document.createElement('div');
+    sectRacks.className = 'sect-rack';
+    sectRacks.style.left = rackStartY + 'px';
+    sectRacks.style.bottom = (v.nSlab * BASE_SCALE) + 'px';
+    sectRacks.style.width = rackAreaLen + 'px';
+    sectRacks.style.height = (v.rH * BASE_SCALE) + 'px';
+    sectRacks.innerText = t.lblRacks;
+    drawSect.appendChild(sectRacks);
+
+    if (hallCduPx > 0) {
+        const sectCdu = document.createElement('div');
+        sectCdu.className = 'sect-cdu';
+        sectCdu.style.left = dataHallY + 'px';
+        sectCdu.style.bottom = (v.nSlab * BASE_SCALE) + 'px';
+        sectCdu.style.width = hallCduPx + 'px';
+        sectCdu.style.height = (2.3 * BASE_SCALE) + 'px';
+        sectCdu.innerText = 'CDU';
+        drawSect.appendChild(sectCdu);
+    }
 
     if (topGalleryY >= 0) renderGallery(topGalleryY, true);
     if (bottomGalleryY >= 0) renderGallery(bottomGalleryY, false);

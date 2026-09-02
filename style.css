@@ -29,6 +29,10 @@ input[type="number"], select { width: 70px; padding: 2px 4px; border: 1px solid 
 
 .highlight-input { color: var(--accent) !important; background-color: #fff5f5; }
 .standby-input { color: var(--standby) !important; background-color: #fffaf0; }
+select.sel-wide { width: 118px; text-align: left; }
+input[type="number"]:disabled { background-color: #eef1f3 !important; color: #7f8c8d !important; border-style: dashed; cursor: not-allowed; }
+.derived-input { background-color: #f4f9ff !important; color: #2980b9 !important; }
+input[type="number"].over-capacity, input[type="number"]:disabled.over-capacity { background-color: #ffebeb !important; color: var(--accent) !important; border: 1px solid var(--accent) !important; }
 
 .panel-summary { flex: 0 0 260px; display: flex; flex-direction: column; gap: 10px; }
 .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
@@ -116,6 +120,9 @@ body.pause-animations .flow-arrow { animation-play-state: paused !important; }
 .sect-slab { position: absolute; background: #95a5a6; border-top: 2px solid #7f8c8d; border-bottom: 2px solid #7f8c8d; width: 100%; z-index: 100; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:bold; box-sizing: border-box;}
 .sect-rack { position: absolute; background: #fdfdfd; border: 1px solid #7f8c8d; border-radius: 2px; z-index: 20; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #2c3e50; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); box-sizing: border-box;}
 .sect-fwu { position: absolute; background: white; border: 1px solid #2980b9; z-index: 20; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #2980b9; box-shadow: inset 0 0 8px rgba(41,128,185,0.15); writing-mode: vertical-rl; box-sizing: border-box;}
+.sect-cdu { position: absolute; background: #e8f8f5; border: 1px solid #27ae60; border-radius: 2px; z-index: 21; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #27ae60; box-shadow: inset 0 0 8px rgba(39,174,96,0.15); writing-mode: vertical-rl; box-sizing: border-box; }
+.sect-cdu.catcher { border: 1.5px dashed var(--standby); background: #fffaf0; color: var(--standby); }
+.cdu-block.inhall { z-index: 12; }
 .sect-beam { position: absolute; background: #636e72; border: 1px solid #2c3e50; z-index: 90; display:flex; align-items:center; justify-content:center; color:white; font-size:9px; box-sizing: border-box;}
 
 .fan-svg { width: 50%; height: 50%; color: #3498db; margin-bottom: 1px; pointer-events: none; }

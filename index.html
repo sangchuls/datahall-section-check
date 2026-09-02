@@ -85,6 +85,12 @@
                 <div class="input-group"><label data-i18n="lblCduCap" style="color:#27ae60;">CDU 용량 (kW)</label><input type="number" id="cduCap" value="850" step="10"></div>
                 <div class="input-group"><label data-i18n="lblCduCatcher" style="color:#27ae60;">CDU 예비 대수 (EA)</label><input type="number" id="cduCatcher" value="0" step="1"></div>
                 <div class="input-group"><label data-i18n="lblCduW">CDU 폭 (m)</label><input type="number" id="cduW" value="1.0" step="0.1"></div>
+                <div class="input-group"><label data-i18n="lblCduLoc" style="color:#27ae60;">CDU 배치 위치</label>
+                    <select id="cduLoc" class="sel-wide">
+                        <option value="gallery" selected data-i18n="valCduGallery">갤러리(항온항습실)</option>
+                        <option value="hall" data-i18n="valCduHall">데이터홀 랙열 끝단</option>
+                    </select>
+                </div>
 
                 <div class="input-group"><label data-i18n="lblNCfm">CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
                 <div class="input-group"><label data-i18n="lblNMargin">여유율 (×1.X)</label><input type="number" id="nMargin" value="1.1" step="0.05"></div>
@@ -93,7 +99,15 @@
                 <div class="input-group"><label style="color:var(--standby);" data-i18n="lblNCatcher">AC 캐쳐(예비)(열)</label><input type="number" id="nCatcher" value="2" step="1" class="standby-input"></div>
                 <div class="input-group"><label data-i18n="lblNW">AC 개구부 폭 (m)</label><input type="number" id="nW" value="3.1" step="0.1"></div>
                 <div class="input-group"><label data-i18n="lblNRatio">AC 유효 개구율</label><input type="number" id="nRatio" value="0.9" step="0.05"></div>
+                <div class="input-group"><label data-i18n="lblAcHMode" style="color:var(--accent);">AC 높이 산출 방식</label>
+                    <select id="acHMode" class="sel-wide">
+                        <option value="auto" selected data-i18n="valHAuto">자동 (풍속 기준)</option>
+                        <option value="manual" data-i18n="valHManual">수동 (높이 지정)</option>
+                        <option value="count" data-i18n="valHCount">대수 산출 (H·V 고정)</option>
+                    </select>
+                </div>
                 <div class="input-group"><label data-i18n="lblNVel">AC SA 풍속(m/s)</label><input type="number" id="nVel" value="2.5" step="0.1"></div>
+                <div class="input-group"><label style="color:var(--accent);" data-i18n="lblNUnitH">AC 1대 높이 (m)</label><input type="number" id="nUnitH" value="1.50" step="0.05" min="0.05" class="highlight-input"></div>
                 <div class="input-group"><label data-i18n="lblNTiers">적층 (Tiers)</label>
                     <select id="nTiers">
                         <option value="1" data-i18n="valT1">1단</option>
