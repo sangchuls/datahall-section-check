@@ -10,8 +10,7 @@ const translations = {
         sec2: "[데이터홀] IT 랙 제원",
         lblRW: "랙 폭 (W, m)", lblRD: "랙 깊이 (D, m)", lblRH: "랙 높이 (H, m)",
         lblRHA: "Hot Aisle (m)", lblRCA: "Cold Aisle (m)", lblRCorridor: "복도 이격 거리 (m)", lblRCnt: "열당 랙 개수 (EA)", lblRRows: "배치 열 수 (EA)",
-        lblRackType: "랙 타입", valRackGeneral: "일반랙", valRackVR: "Vera Rubin NVL72", lblRackKw: "랙당 부하 (kW)",
-        formRackType: "타입", formRackReq: "필요 랙", formRackPlaced: "배치", formRackSpare: "여유", formRackPerRow: "열당", formRackRow: "열",
+        lblRackType: "랙 타입", valRackGeneral: "일반랙", lblRackKw: "랙당 부하 (kW)", formRackType: "타입",
         sec3: "[설비] 부하 및 FWU 제원",
         lblNKw: "IT Load (kW)", lblNCfm: "CFM/kW", lblNMargin: "여유율 (×1.X)",
         lblNUnits: "AC 유효 대수 (N)", lblNPlanUnits: "AC 총 댓수 (열)", lblNCatcher: "AC 캐쳐(예비) (열)",
@@ -25,7 +24,8 @@ const translations = {
         lblNColW: "기둥 너비 (m)", lblNColCnt: "기둥 총 갯수 (EA)", lblNGap: "기기 간 이격 (m)", lblNColGap: "기둥 이격 (m)",
         card1: "총 랙 수량 & 밀도", card2: "갤러리 배치 적합성", card3: "FWU 1대 H", card4: "FWU 총 H", card5: "RA 공간", card6: "RA 풍속",
         resPlanFitOk: "기둥 사이 배치 가능 (OK)", resPlanFitErr: "공간 부족 (간섭 발생)",
-        tabElev: "ELEVATION VIEW (입면)", tabSect: "SECTION VIEW (단면)", tabPlan: "PLAN VIEW (데이터홀 & FWU 코디네이션)",
+        tabElev: "ELEVATION VIEW (입면)", tabSect: "SECTION VIEW (단면)", tab3D: "3D VIEW", tabPlan: "PLAN VIEW (데이터홀 & FWU 코디네이션)",
+        msg3DFail: "3D 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.", msg3DEmpty: "먼저 도면이 생성되어야 합니다.",
         form1Title: "1. IT부하 및 랙 밀도", form1Racks: "총 랙", form1Dens: "밀도", form2Title: "2. 데이터홀 Containment Pitch",
         form3Title: "3. 필요 총 풍량 (AC)", form3LcTitle: "4. 필요 CDU 대수 (LC)", form4Title: "5. FWU 요구 높이 (H)", form4Type: "타입", form4Units: "총 유효대수", form4Air: "1대당 풍량", form4Req: "요구H",
         form5Title: "6. 보 밑 RA공간", form5Clear: "순층고", form5Equip: "장비총고",
@@ -38,12 +38,12 @@ const translations = {
         beAddGpu: "GPU 서버", beAddGeneral: "일반 서버", beAddCdu: "CDU", beClearBtn: "전체 지우기", beSaveAsBtn: "다른 이름으로 저장", beClose: "닫기",
         beProps: "선택한 유닛 속성", beNoSelect: "캔버스에서 유닛을 클릭해 선택하세요.", beSaved: "저장된 블록", beNoSaved: "저장된 블록이 없습니다.",
         bePropType: "유닛 타입", bePropW: "폭 (m)", bePropD: "깊이 (m)", bePropH: "높이 (m)", bePropKw: "용량 (kW)",
-        bePropAttach: "배치 방식", beAttach: "붙이기 (이격 없음)", beGapMode: "이격", beGapDist: "이격 거리 (m)", beDelete: "삭제", bePlaceBtn: "배치",
+        bePropAttach: "배치 방식", beAttach: "붙이기 (이격 없음)", beGapMode: "이격", beGapDist: "이격 거리 (m)", beDelete: "삭제", bePlaceBtn: "배치", beRenameBtn: "이름변경", bePromptRename: "새 블록 이름을 입력하세요",
         bePromptName: "블록 이름을 입력하세요", beEmptyAlert: "유닛을 먼저 추가하세요.", beClearConfirm: "캔버스의 모든 유닛을 지울까요?",
         beTotalLen: "총 길이", beTotalCount: "총 유닛", beTotalKw: "총 용량", beUnitsSuffix: "개",
         beAddRowBtn: "열 추가", beRemoveRowBtn: "열 삭제", beRowLabel: "행", beRowActive: "편집중",
         beTotalRows: "총 행", beRowsSuffix: "행", beRemoveRowConfirm: "마지막 행의 유닛을 모두 지우고 행을 삭제할까요?",
-        formBlockRows: "행", formBlockRepeat: "반복"
+        formBlockRows: "배치 열수", formBlockCycle: "행 템플릿 순환"
     },
     en: {
         title: "Datahall Review Program",
@@ -56,8 +56,7 @@ const translations = {
         sec2: "[Data Hall] IT Rack Specs",
         lblRW: "Rack Width (W, m)", lblRD: "Rack Depth (D, m)", lblRH: "Rack Height (H, m)",
         lblRHA: "Hot Aisle (m)", lblRCA: "Cold Aisle (m)", lblRCorridor: "Corridor Gap (m)", lblRCnt: "Racks per Row (EA)", lblRRows: "Number of Rows (EA)",
-        lblRackType: "Rack Type", valRackGeneral: "Standard Rack", valRackVR: "Vera Rubin NVL72", lblRackKw: "Load per Rack (kW)",
-        formRackType: "Type", formRackReq: "Required", formRackPlaced: "Placed", formRackSpare: "Spare", formRackPerRow: "per row", formRackRow: "rows",
+        lblRackType: "Rack Type", valRackGeneral: "Standard Rack", lblRackKw: "Load per Rack (kW)", formRackType: "Type",
         sec3: "[MEP] Load & FWU Specs",
         lblNKw: "IT Load (kW)", lblNCfm: "CFM/kW", lblNMargin: "Safety Margin (×1.X)",
         lblNUnits: "AC Active Units (N)", lblNPlanUnits: "AC Total Units (Rows)", lblNCatcher: "AC Catcher (Rows)",
@@ -71,7 +70,8 @@ const translations = {
         lblNColW: "Column Width (m)", lblNColCnt: "Total Columns (EA)", lblNGap: "Gap btw Units (m)", lblNColGap: "Gap btw Col (m)",
         card1: "Total Racks & Density", card2: "Gallery Layout Fit", card3: "FWU Unit Height", card4: "Total FWU Height", card5: "RA Space", card6: "RA Velocity",
         resPlanFitOk: "Fits between columns (OK)", resPlanFitErr: "Not enough space (Clash)",
-        tabElev: "ELEVATION VIEW", tabSect: "SECTION VIEW", tabPlan: "PLAN VIEW (Data Hall & FWU)",
+        tabElev: "ELEVATION VIEW", tabSect: "SECTION VIEW", tab3D: "3D VIEW", tabPlan: "PLAN VIEW (Data Hall & FWU)",
+        msg3DFail: "Failed to load the 3D library. Please check your internet connection.", msg3DEmpty: "Generate a drawing first.",
         form1Title: "1. IT Load & Rack Density", form1Racks: "Total Racks", form1Dens: "Density", form2Title: "2. Data Hall Containment Pitch",
         form3Title: "3. Required Airflow (AC)", form3LcTitle: "4. Required CDU (LC)", form4Title: "5. Required FWU Height (H)", form4Type: "Type", form4Units: "Total Active Units", form4Air: "Airflow/unit", form4Req: "Req. H",
         form5Title: "6. RA Space under Beam", form5Clear: "Clear Height", form5Equip: "Total Equip H",
@@ -84,12 +84,12 @@ const translations = {
         beAddGpu: "GPU Server", beAddGeneral: "General Server", beAddCdu: "CDU", beClearBtn: "Clear All", beSaveAsBtn: "Save As", beClose: "Close",
         beProps: "Selected Unit", beNoSelect: "Click a unit on the canvas to select it.", beSaved: "Saved Blocks", beNoSaved: "No saved blocks yet.",
         bePropType: "Unit Type", bePropW: "Width (m)", bePropD: "Depth (m)", bePropH: "Height (m)", bePropKw: "Capacity (kW)",
-        bePropAttach: "Placement", beAttach: "Attached (no gap)", beGapMode: "Spaced", beGapDist: "Gap Distance (m)", beDelete: "Delete", bePlaceBtn: "Place",
+        bePropAttach: "Placement", beAttach: "Attached (no gap)", beGapMode: "Spaced", beGapDist: "Gap Distance (m)", beDelete: "Delete", bePlaceBtn: "Place", beRenameBtn: "Rename", bePromptRename: "Enter a new block name",
         bePromptName: "Enter a block name", beEmptyAlert: "Add a unit first.", beClearConfirm: "Clear all units from the canvas?",
         beTotalLen: "Total Length", beTotalCount: "Total Units", beTotalKw: "Total Capacity", beUnitsSuffix: " units",
         beAddRowBtn: "Add Row", beRemoveRowBtn: "Remove Row", beRowLabel: "Row", beRowActive: "editing",
         beTotalRows: "Total Rows", beRowsSuffix: " rows", beRemoveRowConfirm: "Clear the last row's units and remove it?",
-        formBlockRows: "rows", formBlockRepeat: "repeat"
+        formBlockRows: "Rows Placed", formBlockCycle: "row templates, cycled"
     }
 };
 
@@ -242,12 +242,12 @@ document.getElementById('cduLoc').addEventListener('change', calc);
 applyAcHeightMode();
 
 // ── 랙 타입 ──────────────────────────────────────────────
-// 일반랙  : 랙 수량 입력 → 랙당 부하 산출 (기존 동작)
-// Vera Rubin NVL72 : 랙당 부하 입력 → 필요 랙 수 산출 → 배치 열 수 산출
+// 일반랙 : 랙 수량(열당 랙개수 × 배치 열 수) 입력 → 랙당 부하 산출
+// 블록형 : 랙 블록 편집기에서 만든 행 템플릿(들)을 사용 — 열당 랙개수는 블록이 고정하고,
+//          배치 열 수만 조정하면 그 수만큼 블록의 행 템플릿을 순서대로 순환 배치한다.
 // 제원은 편집 가능한 기본값이며, 타입을 오갈 때 각 타입에서 마지막으로 쓴 값이 보존된다.
 const RACK_PRESETS = {
-    general: { rW: '0.6', rD: '1.2', rH: '2.3', rackKw: '14' },
-    vr:      { rW: '0.6', rD: '1.2', rH: '2.2', rackKw: '225.8' }
+    general: { rW: '0.6', rD: '1.2', rH: '2.3', rackKw: '14' }
 };
 const RACK_SPEC_IDS = ['rW', 'rD', 'rH', 'rackKw'];
 
@@ -265,7 +265,7 @@ let currentRackType = elRackType.value;
 
 function isBlockRackType(val) { return typeof val === 'string' && val.indexOf('block:') === 0; }
 
-// 저장된 랙 블록을 [데이터홀] 랙 타입 선택지에 동적으로 추가한다 (일반랙/베라루빈과 나란히)
+// 저장된 랙 블록을 [데이터홀] 랙 타입 선택지에 동적으로 추가한다 (일반랙과 나란히)
 function refreshRackTypeOptions() {
     const sel = elRackType;
     if (!sel) return;
@@ -281,18 +281,20 @@ function refreshRackTypeOptions() {
     if ([...sel.options].some(o => o.value === prevValue)) sel.value = prevValue;
 }
 
-// 블록형 랙: 유닛 구성 자체가 크기·용량을 정하므로 랙당 제원(폭/깊이/높이/부하)과
-// 배치 열 수·IT Load는 산출값으로 비활성화한다. Hot/Cold Aisle은 그대로 조정 가능.
+// 블록형 랙: 유닛 구성 자체가 크기·용량·열당 랙개수를 정하므로 랙당 제원(폭/깊이/높이/부하)과
+// 열당 랙개수(rCnt)는 산출값으로 비활성화한다. 배치 열 수(rRows)와 Hot/Cold Aisle은 계속 조정 가능
+// — 배치 열 수만큼 블록의 행 템플릿이 순환 반복된다.
 function applyRackTypeFields() {
-    const isVR = (elRackType.value === 'vr');
     const isBlock = isBlockRackType(elRackType.value);
 
-    elRackKw.disabled = isBlock ? true : !isVR;
-    elRackKw.classList.toggle('highlight-input', isVR && !isBlock);
-    elRackKw.classList.toggle('derived-input', isBlock || !isVR);
+    elRackKw.disabled = true; // 일반랙: nKw/총랙수로 산출, 블록: 유닛 구성으로 산출 — 항상 출력 전용
+    elRackKw.classList.remove('highlight-input');
+    elRackKw.classList.add('derived-input');
 
-    elRRows.disabled = isVR || isBlock;
-    elRRows.classList.toggle('derived-input', isVR || isBlock);
+    elRCnt.disabled = isBlock;
+    elRCnt.classList.toggle('derived-input', isBlock);
+
+    elRRows.disabled = false; // 일반랙·블록형 모두 배치 열 수는 사용자가 조정
 
     [elRW, elRD, elRH].forEach(el => {
         el.disabled = isBlock;
@@ -318,6 +320,9 @@ elRackType.addEventListener('change', function() {
         RACK_SPEC_IDS.forEach(id => { document.getElementById(id).value = next[id]; });
     } else {
         document.getElementById('cduLoc').value = 'gallery'; // 블록 내장 CDU와 중복 배치되지 않도록
+        // 블록의 행 템플릿 수를 배치 열 수의 초기값으로 제안 (이후 자유롭게 조정 가능)
+        const bd = beLoadBlocks().find(b => 'block:' + b.id === this.value);
+        if (bd) elRRows.value = bd.rowCount || (bd.rows && bd.rows.length) || 1;
     }
     applyRackTypeFields();
     calc();
@@ -450,11 +455,20 @@ function switchTopView(viewName) {
     const btns = document.querySelectorAll('.tab-btn');
     btns[0].classList.toggle('active', viewName === 'elev');
     btns[1].classList.toggle('active', viewName === 'sect');
-    
+    btns[2].classList.toggle('active', viewName === '3d');
+
     document.getElementById('elevContainer').style.display = (viewName === 'elev') ? 'block' : 'none';
     document.getElementById('sectContainer').style.display = (viewName === 'sect') ? 'block' : 'none';
-    
-    autoScaleDrawing();
+    document.getElementById('draw3dContainer').style.display = (viewName === '3d') ? 'block' : 'none';
+    document.getElementById('zoomControls2D').style.display = (viewName === '3d') ? 'none' : 'flex';
+    document.getElementById('controls3D').style.display = (viewName === '3d') ? 'flex' : 'none';
+
+    if (viewName === '3d') {
+        ensure3DInit();
+        render3D();
+    } else {
+        autoScaleDrawing();
+    }
 }
 
 let measureMode = { top: false, plan: false };
@@ -634,51 +648,45 @@ function calc() {
     v.cduLoc = document.getElementById('cduLoc').value;
     v.rackType = document.getElementById('rackType').value;
     
-    // 일반랙 : 랙 수량 입력 → 랙당 부하(밀도) 산출
-    // VR NVL72 : 랙당 부하 입력 → 필요 랙 수 산출 → 배치 열 수 산출
-    // 랙 블록  : 저장된 유닛 구성이 열 수·랙당 제원·IT Load를 모두 결정 (rCnt = 행당 블록 반복 횟수)
-    const isVR = (v.rackType === 'vr');
+    // 일반랙 : 랙 수량(열당 랙개수 × 배치 열 수) 입력 → 랙당 부하(밀도) 산출
+    // 랙 블록 : 열당 랙개수는 블록이 고정 — 배치 열 수(rRows, 사용자 입력)만큼 블록의 행 템플릿을
+    //           순서대로 순환 배치한다 (행 템플릿보다 배치 열 수가 많으면 처음부터 다시 순환)
     const isBlock = isBlockRackType(v.rackType);
     const blockDef = isBlock ? beLoadBlocks().find(b => 'block:' + b.id === v.rackType) : null;
     let reqRacks, rackDensity, blockStats = null;
 
     if (isBlock && blockDef) {
-        const rows = blockDef.rows || [];
+        const rows = blockDef.rows && blockDef.rows.length ? blockDef.rows : [[]];
         let maxRowW = 0, maxUnitD = 1.2, maxUnitH = 2.3, totalKwAll = 0;
         const counts = { gpu: 0, general: 0, cdu: 0 };
         rows.forEach(rowUnits => {
             const laid = computeRowLayout(rowUnits);
             maxRowW = Math.max(maxRowW, laid.length ? laid[laid.length - 1].right : 0);
-            rowUnits.forEach(u => {
-                maxUnitD = Math.max(maxUnitD, u.d);
-                maxUnitH = Math.max(maxUnitH, u.h);
-                totalKwAll += u.kw * v.rCnt;
-                counts[u.type] = (counts[u.type] || 0) + v.rCnt;
-            });
+            rowUnits.forEach(u => { maxUnitD = Math.max(maxUnitD, u.d); maxUnitH = Math.max(maxUnitH, u.h); });
         });
-        v.rRows = rows.length;
+        for (let i = 0; i < v.rRows; i++) {
+            rows[i % rows.length].forEach(u => {
+                totalKwAll += u.kw;
+                counts[u.type] = (counts[u.type] || 0) + 1;
+            });
+        }
         v.rD = maxRowW > 0 ? maxUnitD : 1.2;
         v.rH = maxUnitH;
         v.nKw = totalKwAll;
-        elRRows.value = v.rRows;
+        v.rCnt = rows[0].length; // 열당 랙개수는 블록의 행 템플릿이 고정 (참고 표시용)
         elRD.value = v.rD.toFixed(2);
         elRH.value = v.rH.toFixed(2);
         elNKw.value = Math.round(v.nKw);
-        blockStats = { rowWidthM: maxRowW, counts, totalKw: totalKwAll };
+        elRCnt.value = v.rCnt;
+        blockStats = { rowWidthM: maxRowW, counts, totalKw: totalKwAll, templateRows: rows.length };
         reqRacks = counts.gpu + counts.general + counts.cdu;
         rackDensity = reqRacks > 0 ? (v.nKw / reqRacks) : 0;
-    } else if (isVR) {
-        rackDensity = v.rackKw;
-        reqRacks = v.rackKw > 0 ? Math.ceil(v.nKw / v.rackKw) : 0;
-        v.rRows = v.rCnt > 0 ? Math.ceil(reqRacks / v.rCnt) : 0;
-        elRRows.value = v.rRows;
     } else {
         reqRacks = v.rCnt * v.rRows;
         rackDensity = reqRacks > 0 ? (v.nKw / reqRacks) : 0;
         elRackKw.value = rackDensity.toFixed(1);
     }
     const totalRacks = isBlock ? reqRacks : v.rCnt * v.rRows;   // 도면에 실제로 배치되는 수량
-    const rackSpare = totalRacks - reqRacks;
     const pitch = v.rHA + (v.rD * 2) + v.rCA;
 
     const acLoad = v.nKw * (v.acRatio / 100);
@@ -801,7 +809,7 @@ function calc() {
     }
 
     document.getElementById('formulaBox').innerHTML = `
-        <div class="f-item"><b>${t.form1Title}:</b><br>${isBlock && blockStats ? `${t.formRackType}: <b style="color:#8e44ad;">🧩 ${blockDef.name}</b><br>${t.formBlockRows}: ${v.rRows}${t.beRowsSuffix} × ${t.formBlockRepeat} ${v.rCnt} ➔ GPU ${blockStats.counts.gpu} · ${t.beAddGeneral} ${blockStats.counts.general} · CDU ${blockStats.counts.cdu}<br>${t.form1Dens}: <code style="color:#c0392b;">${totalRacks}${t.beUnitsSuffix} / ${Math.round(v.nKw).toLocaleString()} kW</code>` : `${t.form1Racks}: ${totalRacks} EA ➔ ${t.form1Dens}: <b>${rackDensity.toFixed(2)} kW/Rack</b>${isVR ? `<br>${t.formRackType}: <b style="color:#1e8449;">${t.valRackVR}</b> / ${v.nKw}kW ÷ ${v.rackKw}kW = <b>${t.formRackReq} ${reqRacks} EA</b><br>${t.formRackPerRow} ${v.rCnt} × ${v.rRows}${t.formRackRow} → ${t.formRackPlaced}: <code style="color:#c0392b;">${totalRacks} EA</code>${rackSpare > 0 ? ` (${t.formRackSpare} ${rackSpare} EA)` : ''}` : ''}`}</div>
+        <div class="f-item"><b>${t.form1Title}:</b><br>${isBlock && blockStats ? `${t.formRackType}: <b style="color:#8e44ad;">🧩 ${blockDef.name}</b> (${blockStats.templateRows} ${t.formBlockCycle})<br>${t.formBlockRows}: <code style="color:#c0392b;">${v.rRows}${t.beRowsSuffix}</code> × ${t.lblRCnt}: ${v.rCnt} ➔ GPU ${blockStats.counts.gpu} · ${t.beAddGeneral} ${blockStats.counts.general} · CDU ${blockStats.counts.cdu}<br>${t.form1Dens}: <code style="color:#c0392b;">${totalRacks}${t.beUnitsSuffix} / ${Math.round(v.nKw).toLocaleString()} kW</code>` : `${t.form1Racks}: ${totalRacks} EA ➔ ${t.form1Dens}: <b>${rackDensity.toFixed(2)} kW/Rack</b>`}</div>
         <div class="f-item"><b>${t.form2Title}:</b><br>HA(${v.rHA}) + Rack(${v.rD}×2) + CA(${v.rCA}) = <code style="color:#27ae60;">${pitch.toFixed(2)} m</code></div>
         <div class="f-item"><b>${t.form3Title}:</b><br>${v.nKw}kW × ${v.acRatio}% = ${acLoad.toFixed(1)}kW<br>${acLoad.toFixed(1)}kW × ${v.nCfm}CFM/kW × 1.699 × ${v.nMargin} = <b>${Math.round(totalCmh).toLocaleString()} CMH</b></div>
         <div class="f-item"><b>${t.form3LcTitle}:</b><br>${v.nKw}kW × ${v.lcRatio}% × ${v.nMargin} = ${cduReqKw.toFixed(1)}kW<br>${cduReqKw.toFixed(1)}kW / ${v.cduCap}kW = <b>${cduActive} + ${v.cduCatcher}대(예비) = ${cduTotal}대</b><br>${t.formLcLoc}: <b style="color:#27ae60;">${cduInGallery ? t.valCduGallery : t.valCduHall}</b>${cduInGallery ? '' : `<br>${t.formLcRows}: ${hallCdu.rowsUsed} / ${hallCdu.rowCount} (${t.formLcPerRow} ${hallCdu.perRowMax}EA) → ${t.formLcAddLen}: <code style="color:#c0392b;">${hallCdu.len.toFixed(2)} m</code>`}</div>
@@ -825,6 +833,13 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     const drawPlan = document.getElementById('drawPlan');
     const drawSect = document.getElementById('drawSect');
     drawElev.innerHTML = ''; drawPlan.innerHTML = ''; drawSect.innerHTML = '';
+
+    // 3D 뷰/내보내기(OBJ·DXF)용 지오메트리 — 평면도가 이미 계산한 X/Z 위치(px)를 그대로 미터로 환산해 기록한다.
+    // yBase/hM(둘 다 미터)만 요소별로 따로 지정해 수직 배치를 결정한다.
+    const geo3D = [];
+    const push3D = (type, leftPx, topPx, wPx, dPx, yBaseM, hM, color) => {
+        geo3D.push({ type, x: leftPx / BASE_SCALE, z: topPx / BASE_SCALE, w: wPx / BASE_SCALE, d: dPx / BASE_SCALE, y: yBaseM, h: hM, color });
+    };
     
     const totalCH = v.nCH + v.nSlab;
     drawElev.style.width = (totalDrawingWidth * BASE_SCALE) + 'px';
@@ -840,7 +855,7 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     // 랙 영역 + (데이터홀 배치 시) 랙열 끝단 CDU 영역
     // 블록형은 행마다 유닛 구성이 다를 수 있어, 모든 행에 공통으로 쓸 폭은 가장 넓은 행 기준으로 잡는다
     const rackAreaLen = isBlockRack
-        ? (blockInfo.stats.rowWidthM * v.rCnt * BASE_SCALE)
+        ? (blockInfo.stats.rowWidthM * BASE_SCALE)
         : (v.rCnt * v.rW * BASE_SCALE);
     const hallCduPx = (hallCdu ? hallCdu.len : 0) * BASE_SCALE;
     const hallCduDepth = 1.2 * BASE_SCALE;
@@ -909,6 +924,11 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                 planCol.style.width = (v.nColW * BASE_SCALE) + 'px';
                 planCol.style.height = (v.nColW * BASE_SCALE) + 'px';
                 drawPlan.appendChild(planCol);
+
+                push3D('column', colX, colY, v.nColW * BASE_SCALE, v.nColW * BASE_SCALE, v.nSlab, v.nCH, '#7f8c8d');
+                if (i < v.nColCnt - 1) {
+                    push3D('beam', colX, colY, v.nSpan * BASE_SCALE, v.nColW * BASE_SCALE, v.nSlab + v.nCH, v.nBD, '#636e72');
+                }
             }
         }
     });
@@ -928,10 +948,10 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     const dhStartX = (totalDrawingWidth * BASE_SCALE - dataHallTotalW) / 2;
 
     const rackStartY = dataHallY + hallCduPx;
-    const isVRrack = (v.rackType === 'vr');
 
-    // 물리 행 하나를 그린다 — 블록형은 저장된 행 템플릿(순서대로 소비)을 rCnt번 반복해 유닛별로,
-    // 그 외에는 기존처럼 rCnt개의 동일 규격 랙을 그린다. X축(currentX, 행 깊이)은 두 방식 모두 공유.
+    // 물리 행 하나를 그린다 — 블록형은 저장된 행 템플릿을 순서대로 하나씩 소비하며(다 쓰면 처음부터
+    // 다시 순환) 유닛별로 그리고, 그 외에는 기존처럼 rCnt개의 동일 규격 랙을 그린다.
+    // X축(currentX, 행 깊이)은 두 방식 모두 공유.
     let blockRowCursor = 0;
     const drawPhysicalRow = (rowX) => {
         if (isBlockRack) {
@@ -939,29 +959,29 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
             const rowUnits = rows[blockRowCursor % rows.length] || [];
             blockRowCursor++;
             const laid = computeRowLayout(rowUnits);
-            const rowWidthM = laid.length ? laid[laid.length - 1].right : 0;
-            for (let r = 0; r < v.rCnt; r++) {
-                laid.forEach(u => {
-                    const el = document.createElement('div');
-                    el.className = 'rack-block blk-' + u.type;
-                    el.style.left = rowX + 'px';
-                    el.style.top = (rackStartY + (r * rowWidthM + u.left) * BASE_SCALE) + 'px';
-                    el.style.width = (u.d * BASE_SCALE) + 'px';
-                    el.style.height = (u.w * BASE_SCALE) + 'px';
-                    el.innerHTML = `<span class="rack-kw">${u.kw > 0 ? u.kw + 'kW' : ''}</span>`;
-                    drawPlan.appendChild(el);
-                });
-            }
+            laid.forEach(u => {
+                const el = document.createElement('div');
+                el.className = 'rack-block blk-' + u.type;
+                el.style.left = rowX + 'px';
+                el.style.top = (rackStartY + u.left * BASE_SCALE) + 'px';
+                el.style.width = (u.d * BASE_SCALE) + 'px';
+                el.style.height = (u.w * BASE_SCALE) + 'px';
+                el.innerHTML = `<span class="rack-kw">${u.kw > 0 ? u.kw + 'kW' : ''}</span>`;
+                drawPlan.appendChild(el);
+
+                push3D('rack', rowX, rackStartY + u.left * BASE_SCALE, u.d * BASE_SCALE, u.w * BASE_SCALE, v.nSlab, u.h, BE_TYPE_DEFAULTS[u.type].color);
+            });
         } else {
             for (let k = 0; k < v.rCnt; k++) {
                 let rack = document.createElement('div');
-                rack.className = isVRrack ? 'rack-block vr' : 'rack-block';
-                if (isVRrack) rack.innerHTML = `<span class="rack-kw">${v.rackKw}</span>`;
+                rack.className = 'rack-block';
                 rack.style.left = rowX + 'px';
                 rack.style.top = (rackStartY + k * v.rW * BASE_SCALE) + 'px';
                 rack.style.width = (v.rD * BASE_SCALE) + 'px';
                 rack.style.height = (v.rW * BASE_SCALE) + 'px';
                 drawPlan.appendChild(rack);
+
+                push3D('rack', rowX, rackStartY + k * v.rW * BASE_SCALE, v.rD * BASE_SCALE, v.rW * BASE_SCALE, v.nSlab, v.rH, '#ffffff');
             }
         }
     };
@@ -991,6 +1011,9 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
             el.style.height = (v.cduW * BASE_SCALE) + 'px';
             el.innerHTML = `<span class="fwu-label">${unit.isCatcher ? t.lblCatcher : 'CDU'}</span>`;
             drawPlan.appendChild(el);
+
+            push3D('cdu', cduX, y, hallCduDepth, v.cduW * BASE_SCALE, v.nSlab, 2.3, unit.isCatcher ? '#f39c12' : '#27ae60');
+
             y += (v.cduW + v.nGap) * BASE_SCALE;
         }
     };
@@ -1186,6 +1209,15 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
                     eqPlan.innerHTML = `<span class="fwu-label" style="transform: rotate(90deg);">${labelText}</span>`;
                     drawPlan.appendChild(eqPlan);
 
+                    {
+                        const eqTopPx = isTop ? (fwuTopY + (planDepth - eqD)) : fwuTopY;
+                        const eqHeightM = eq.type === 'FWU' ? totalFwuH : 2.3;
+                        let eqColor = eq.type === 'FWU' ? '#2980b9' : '#27ae60';
+                        if (eq.isCatcher) eqColor = '#f39c12';
+                        if (!isPlanFit) eqColor = '#e74c3c';
+                        push3D(eq.type.toLowerCase(), currentEqX, eqTopPx, eqW * BASE_SCALE, eqD, v.nSlab, eqHeightM, eqColor);
+                    }
+
                     if (eq.type === 'FWU') {
                         const airClass = eq.isCatcher ? 'sa-air catcher' : 'sa-air';
                         const air = document.createElement('div');
@@ -1255,7 +1287,7 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
 
     // SECTION: 데이터홀 랙 + (해당 시) 랙열 끝단 CDU
     const sectRacks = document.createElement('div');
-    sectRacks.className = isBlockRack ? 'sect-rack blk' : (isVRrack ? 'sect-rack vr' : 'sect-rack');
+    sectRacks.className = isBlockRack ? 'sect-rack blk' : 'sect-rack';
     sectRacks.style.left = rackStartY + 'px';
     sectRacks.style.bottom = (v.nSlab * BASE_SCALE) + 'px';
     sectRacks.style.width = rackAreaLen + 'px';
@@ -1306,7 +1338,209 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
     elevTopSlab.style.height = (v.nSlab * BASE_SCALE) + 'px'; 
     drawElev.appendChild(elevTopSlab);
 
+    // 바닥/천장 슬라브 — 평면 도면 전체 폭·깊이에 걸치는 판으로 3D 지오메트리에 한 번만 추가
+    const slabColor = '#95a5a6';
+    push3D('slab', 0, 0, totalDrawingWidth * BASE_SCALE, canvasTotalHeight, 0, v.nSlab, slabColor);
+    push3D('slab', 0, 0, totalDrawingWidth * BASE_SCALE, canvasTotalHeight, v.nSlab + v.nCH, v.nSlab, slabColor);
+    currentGeometry3D = geo3D;
+
     autoScaleDrawing();
+    render3D();
+}
+
+// ══════════════════════════════════════════════════════════════
+// 3D VIEW — Three.js로 평면도가 계산한 지오메트리(currentGeometry3D, 단위: m)를 그대로 시각화한다.
+// 좌표계는 평면도 그대로 사용: x=건물 스팬 방향, z=데이터홀 길이/깊이 방향, y=높이(바닥=0).
+// 라이브러리는 CDN에서 불러오며(offline 시 안내 문구로 대체), OBJ/DXF 내보내기도 이 배열 하나로 처리한다.
+// ══════════════════════════════════════════════════════════════
+let currentGeometry3D = [];
+const three3D = { scene: null, camera: null, renderer: null, controls: null, group: null, ro: null, initialized: false, framedOnce: false };
+
+function ensure3DInit() {
+    if (three3D.initialized) return;
+    const container = document.getElementById('draw3d');
+    const fallback = document.getElementById('draw3dFallback');
+    if (typeof THREE === 'undefined' || typeof THREE.OrbitControls === 'undefined') {
+        fallback.style.display = 'block';
+        fallback.innerText = translations[currentLang].msg3DFail;
+        return;
+    }
+    fallback.style.display = 'none';
+
+    three3D.scene = new THREE.Scene();
+    three3D.scene.background = new THREE.Color(0xeef1f4);
+
+    three3D.camera = new THREE.PerspectiveCamera(50, 1, 0.1, 3000);
+
+    three3D.renderer = new THREE.WebGLRenderer({ antialias: true });
+    three3D.renderer.shadowMap.enabled = true;
+    container.appendChild(three3D.renderer.domElement);
+
+    three3D.controls = new THREE.OrbitControls(three3D.camera, three3D.renderer.domElement);
+    three3D.controls.enableDamping = true;
+    three3D.controls.dampingFactor = 0.08;
+    three3D.controls.addEventListener('change', () => three3D.renderer.render(three3D.scene, three3D.camera));
+
+    three3D.scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(40, 60, 30);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(2048, 2048);
+    dirLight.shadow.camera.left = -100; dirLight.shadow.camera.right = 100;
+    dirLight.shadow.camera.top = 100; dirLight.shadow.camera.bottom = -100;
+    three3D.scene.add(dirLight);
+    three3D.scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.35));
+
+    three3D.group = new THREE.Group();
+    three3D.scene.add(three3D.group);
+    three3D.scene.add(new THREE.GridHelper(300, 150, 0xbbbbbb, 0xe0e0e0));
+
+    three3D.ro = new ResizeObserver(() => resize3D());
+    three3D.ro.observe(container);
+
+    three3D.initialized = true;
+    resize3D();
+}
+
+function resize3D() {
+    if (!three3D.initialized) return;
+    const container = document.getElementById('draw3d');
+    const w = container.clientWidth || 1, h = container.clientHeight || 1;
+    three3D.camera.aspect = w / h;
+    three3D.camera.updateProjectionMatrix();
+    three3D.renderer.setSize(w, h);
+    three3D.renderer.render(three3D.scene, three3D.camera);
+}
+
+// 지오메트리 전체를 감싸는 시점으로 카메라를 되돌린다 (첫 진입 시 자동 1회 + 버튼으로 언제든)
+function reset3DCamera() {
+    if (!three3D.initialized || !currentGeometry3D.length) return;
+    let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity, maxY = 0;
+    currentGeometry3D.forEach(b => {
+        minX = Math.min(minX, b.x); maxX = Math.max(maxX, b.x + b.w);
+        minZ = Math.min(minZ, b.z); maxZ = Math.max(maxZ, b.z + b.d);
+        maxY = Math.max(maxY, b.y + b.h);
+    });
+    const cx = (minX + maxX) / 2, cz = (minZ + maxZ) / 2;
+    const dist = Math.max(maxX - minX, maxZ - minZ, maxY, 10) * 1.15;
+    three3D.camera.position.set(cx - dist * 0.55, dist * 0.6, cz + dist * 0.85);
+    three3D.controls.target.set(cx, maxY * 0.3, cz);
+    three3D.controls.update();
+    resize3D();
+}
+
+function render3D() {
+    if (typeof THREE === 'undefined') return;
+    ensure3DInit();
+    if (!three3D.initialized) return;
+
+    while (three3D.group.children.length) {
+        const mesh = three3D.group.children.pop();
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+    }
+
+    currentGeometry3D.forEach(b => {
+        const geo = new THREE.BoxGeometry(Math.max(b.w, 0.01), Math.max(b.h, 0.01), Math.max(b.d, 0.01));
+        const mat = new THREE.MeshStandardMaterial({ color: b.color, roughness: 0.7, metalness: 0.05 });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(b.x + b.w / 2, b.y + b.h / 2, b.z + b.d / 2);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        three3D.group.add(mesh);
+    });
+
+    if (!three3D.framedOnce && currentGeometry3D.length) {
+        reset3DCamera();
+        three3D.framedOnce = true;
+    }
+    resize3D();
+}
+
+// ── OBJ(+MTL) / DXF 내보내기 — currentGeometry3D 하나를 두 포맷으로 직렬화 ──
+// OBJ: 라이노(네이티브 지원)·스케치업(가져오기)에 열 수 있다. 색상은 동반 .mtl 파일에 담긴다.
+// DXF: AutoCAD 등 일반 CAD용. 좌표계를 Z-업(건축 관례)으로 바꿔 내보내고, 색상은 요소 종류별 근사값이다.
+function hex3DToRgb01(hex) {
+    hex = String(hex).replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const num = parseInt(hex, 16);
+    return { r: ((num >> 16) & 255) / 255, g: ((num >> 8) & 255) / 255, b: (num & 255) / 255 };
+}
+
+function generateOBJ(mtlFilename) {
+    const objLines = ['# Datahall 3D export', 'mtllib ' + mtlFilename, ''];
+    const mtlLines = [];
+    const colorToMat = {};
+    let matCount = 0;
+    let vIdx = 1;
+
+    // 바깥에서 본 CCW가 되도록 고정한 박스 8정점·6면 인덱스
+    const FACES = [[4, 5, 6, 7], [0, 3, 2, 1], [1, 5, 6, 2], [0, 4, 7, 3], [3, 7, 6, 2], [0, 1, 5, 4]];
+
+    currentGeometry3D.forEach((b, bi) => {
+        if (!colorToMat[b.color]) {
+            matCount++;
+            const name = 'mat' + matCount;
+            colorToMat[b.color] = name;
+            const rgb = hex3DToRgb01(b.color);
+            mtlLines.push(`newmtl ${name}`, `Kd ${rgb.r.toFixed(3)} ${rgb.g.toFixed(3)} ${rgb.b.toFixed(3)}`, 'd 1.0', '');
+        }
+        const x0 = b.x, x1 = b.x + b.w, y0 = b.y, y1 = b.y + b.h, z0 = b.z, z1 = b.z + b.d;
+        const verts = [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]];
+
+        objLines.push(`o ${b.type}_${bi}`, `usemtl ${colorToMat[b.color]}`);
+        verts.forEach(p => objLines.push(`v ${p[0].toFixed(3)} ${p[1].toFixed(3)} ${p[2].toFixed(3)}`));
+        FACES.forEach(f => objLines.push('f ' + f.map(n => vIdx + n).join(' ')));
+        vIdx += 8;
+        objLines.push('');
+    });
+
+    return { obj: objLines.join('\n'), mtl: mtlLines.join('\n') };
+}
+
+function generateDXF() {
+    const LAYER_COLOR = { column: 8, beam: 8, slab: 9, rack: 7, fwu: 5, cdu: 3 };
+    const lines = ['0', 'SECTION', '2', 'ENTITIES'];
+    // DXF(건축 CAD 관례)는 Z-업이므로 3D뷰의 y(높이) ↔ z를 바꿔서 내보낸다
+    currentGeometry3D.forEach(b => {
+        const layer = (b.type || 'rack').toUpperCase();
+        const color = LAYER_COLOR[b.type] || 7;
+        const x0 = b.x, x1 = b.x + b.w, y0 = b.z, y1 = b.z + b.d, z0 = b.y, z1 = b.y + b.h;
+        const c = [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]];
+        const pushFace = (i0, i1, i2, i3) => {
+            const p0 = c[i0], p1 = c[i1], p2 = c[i2], p3 = c[i3];
+            lines.push('0', '3DFACE', '8', layer, '62', String(color));
+            [p0, p1, p2, p3].forEach((p, i) => {
+                const codes = [10, 20, 30, 11, 21, 31, 12, 22, 32, 13, 23, 33];
+                lines.push(String(codes[i * 3]), p[0].toFixed(3), String(codes[i * 3 + 1]), p[1].toFixed(3), String(codes[i * 3 + 2]), p[2].toFixed(3));
+            });
+        };
+        pushFace(0, 1, 2, 3); pushFace(4, 7, 6, 5); pushFace(0, 4, 5, 1);
+        pushFace(2, 6, 7, 3); pushFace(1, 5, 6, 2); pushFace(0, 3, 7, 4);
+    });
+    lines.push('0', 'ENDSEC', '0', 'EOF');
+    return lines.join('\n');
+}
+
+function downloadText(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function export3D(format) {
+    if (!currentGeometry3D.length) { alert(translations[currentLang].msg3DEmpty); return; }
+    const base = 'DataHall_3D_' + Date.now();
+    if (format === 'obj') {
+        const { obj, mtl } = generateOBJ(base + '.mtl');
+        downloadText(obj, base + '.obj', 'text/plain');
+        downloadText(mtl, base + '.mtl', 'text/plain');
+    } else if (format === 'dxf') {
+        downloadText(generateDXF(), base + '.dxf', 'application/dxf');
+    }
 }
 
 let viewState = {
@@ -1739,10 +1973,24 @@ function beRenderSavedList() {
             '<span class="meta">' + meta + '</span>' +
             '<div class="row">' +
                 '<button class="btn-small" onclick="bePlaceBlock(\'' + b.id + '\')">' + t.bePlaceBtn + '</button>' +
+                '<button class="btn-small" onclick="beRenameBlock(\'' + b.id + '\')">✏️ ' + t.beRenameBtn + '</button>' +
                 '<button class="btn-small" style="color:var(--accent);" onclick="beDeleteBlock(\'' + b.id + '\')">' + t.beDelete + '</button>' +
             '</div>' +
         '</div>';
     }).join('');
+}
+
+// 저장된 블록의 이름을 바꾼다 — 메인 탭의 랙 타입 선택지 라벨(🧩 이름)도 함께 갱신
+function beRenameBlock(id) {
+    const blocks = beLoadBlocks();
+    const b = blocks.find(x => x.id === id);
+    if (!b) return;
+    const name = prompt(translations[currentLang].bePromptRename, b.name);
+    if (!name || name === b.name) return;
+    b.name = name;
+    localStorage.setItem('customRackBlocks', JSON.stringify(blocks));
+    beRenderSavedList();
+    refreshRackTypeOptions();
 }
 
 // 저장된 블록의 모든 행을 현재 캔버스 끝에 새 행으로 이어 붙인다 (블록을 조합해 더 큰 구성을 쌓는 용도)

@@ -71,10 +71,9 @@
                 <div class="input-group"><label data-i18n="lblRackType">랙 타입</label>
                     <select id="rackType" class="sel-wide">
                         <option value="general" selected data-i18n="valRackGeneral">일반랙</option>
-                        <option value="vr" data-i18n="valRackVR">Vera Rubin NVL72</option>
                     </select>
                 </div>
-                <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRackKw">랙당 부하 (kW)</label><input type="number" id="rackKw" value="225.8" step="0.1" min="0.1" class="highlight-input"></div>
+                <div class="input-group"><label data-i18n="lblRackKw">랙당 부하 (kW)</label><input type="number" id="rackKw" value="14" step="0.1" min="0.1" class="derived-input" disabled></div>
                 <div class="input-group"><label data-i18n="lblRW">랙 폭 (W, m)</label><input type="number" id="rW" value="0.6" step="0.1"></div>
                 <div class="input-group"><label data-i18n="lblRD">랙 깊이 (D, m)</label><input type="number" id="rD" value="1.2" step="0.1"></div>
                 <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRH">랙 높이 (H, m)</label><input type="number" id="rH" value="2.3" step="0.1" class="highlight-input"></div>
@@ -147,19 +146,29 @@
                 <div class="view-tabs">
                     <button class="tab-btn active" onclick="switchTopView('elev')" data-i18n="tabElev">ELEVATION VIEW (입면)</button>
                     <button class="tab-btn" onclick="switchTopView('sect')" data-i18n="tabSect">SECTION VIEW (단면)</button>
+                    <button class="tab-btn" onclick="switchTopView('3d')" data-i18n="tab3D">3D VIEW</button>
                 </div>
-                <div class="zoom-controls">
+                <div class="zoom-controls" id="zoomControls2D">
                     <button class="zoom-btn measure-btn" id="btnMeasureTop" onclick="toggleMeasure('top')" title="거리 측정">📏</button>
                     <button class="zoom-btn" onclick="handleZoom(currentTopView, 1.2)">+</button>
                     <button class="zoom-btn" onclick="handleZoom(currentTopView, 0.833)">-</button>
                     <button class="zoom-btn" onclick="handleFit(currentTopView)">Fit</button>
                 </div>
-                
+                <div class="zoom-controls" id="controls3D" style="display:none;">
+                    <button class="zoom-btn" onclick="reset3DCamera()" title="카메라 초기화">⤾ Fit</button>
+                    <button class="zoom-btn" onclick="export3D('obj')" title="OBJ + MTL 내보내기 (라이노/스케치업)">⬇ OBJ</button>
+                    <button class="zoom-btn" onclick="export3D('dxf')" title="DXF 내보내기 (AutoCAD 등)">⬇ DXF</button>
+                </div>
+
                 <div class="drawing-container" id="elevContainer">
                     <div class="drawing-wrapper" id="drawElev"></div>
                 </div>
                 <div class="drawing-container" id="sectContainer" style="display:none;">
                     <div class="drawing-wrapper" id="drawSect"></div>
+                </div>
+                <div class="drawing-container" id="draw3dContainer" style="display:none; cursor:grab;">
+                    <div id="draw3d" style="width:100%; height:100%;"></div>
+                    <div id="draw3dFallback" style="display:none; padding:20px; font-size:12px; color:var(--accent);"></div>
                 </div>
             </div>
 
@@ -219,6 +228,8 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
