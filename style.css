@@ -173,3 +173,20 @@ body.pause-animations .fan-svg, body.pause-animations .sa-air { animation-play-s
 .be-saved-item .meta { color: #7f8c8d; font-size: 10px; display: block; margin-top: 1px; }
 .be-saved-item .row { display: flex; gap: 4px; margin-top: 5px; }
 .be-saved-item .row button { flex: 1; }
+
+/* ── AI 어시스턴트 ── */
+.ai-overlay { position: fixed; inset: 0; background: rgba(20,25,30,0.55); z-index: 2100; display: flex; align-items: center; justify-content: center; }
+.ai-panel { background: #fff; width: 480px; max-width: 92vw; height: 640px; max-height: 88vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
+.ai-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 15px; border-bottom: 2px solid var(--line); flex-shrink: 0; }
+.ai-header h2 { margin: 0; font-size: 15px; color: var(--primary); }
+.ai-subtitle { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
+.ai-body { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 10px; gap: 8px; }
+.ai-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+.ai-msg { max-width: 88%; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.ai-msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 2px; }
+.ai-msg.model { align-self: flex-start; background: #f0f2f5; color: #2c3e50; border-bottom-left-radius: 2px; }
+.ai-msg.applied { align-self: center; background: #eafaf1; color: #1e8449; font-size: 11px; border: 1px dashed #27ae60; }
+.ai-msg.error { align-self: center; background: #fdecea; color: var(--accent); font-size: 11px; border: 1px dashed var(--accent); }
+.ai-msg.thinking { color: #95a5a6; font-style: italic; background: transparent; }
+.ai-inputRow { display: flex; gap: 6px; flex-shrink: 0; }
+.ai-inputRow input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }

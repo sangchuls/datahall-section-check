@@ -26,6 +26,9 @@ const translations = {
         resPlanFitOk: "기둥 사이 배치 가능 (OK)", resPlanFitErr: "공간 부족 (간섭 발생)",
         tabElev: "ELEVATION VIEW (입면)", tabSect: "SECTION VIEW (단면)", tab3D: "3D VIEW", tabPlan: "PLAN VIEW (데이터홀 & FWU 코디네이션)",
         msg3DFail: "3D 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.", msg3DEmpty: "먼저 도면이 생성되어야 합니다.",
+        btnAI: "🤖 AI 어시스턴트", aiTitle: "🤖 AI 어시스턴트", aiSubtitle: "현재 설계값을 바탕으로 질문하거나 값 변경을 요청하세요. (Gemini)",
+        aiSend: "전송", aiPlaceholder: "예: IT Load를 6000kW로 바꾸고 CDU 필요 대수 알려줘",
+        aiErrNoKey: "서버에 GEMINI_API_KEY가 설정되지 않았습니다.", aiErrGeneric: "오류: ",
         form1Title: "1. IT부하 및 랙 밀도", form1Racks: "총 랙", form1Dens: "밀도", form2Title: "2. 데이터홀 Containment Pitch",
         form3Title: "3. 필요 총 풍량 (AC)", form3LcTitle: "4. 필요 CDU 대수 (LC)", form4Title: "5. FWU 요구 높이 (H)", form4Type: "타입", form4Units: "총 유효대수", form4Air: "1대당 풍량", form4Req: "요구H",
         form5Title: "6. 보 밑 RA공간", form5Clear: "순층고", form5Equip: "장비총고",
@@ -72,6 +75,9 @@ const translations = {
         resPlanFitOk: "Fits between columns (OK)", resPlanFitErr: "Not enough space (Clash)",
         tabElev: "ELEVATION VIEW", tabSect: "SECTION VIEW", tab3D: "3D VIEW", tabPlan: "PLAN VIEW (Data Hall & FWU)",
         msg3DFail: "Failed to load the 3D library. Please check your internet connection.", msg3DEmpty: "Generate a drawing first.",
+        btnAI: "🤖 AI Assistant", aiTitle: "🤖 AI Assistant", aiSubtitle: "Ask about the current design or request value changes. (Gemini)",
+        aiSend: "Send", aiPlaceholder: "e.g. Set IT Load to 6000kW and tell me the required CDU count",
+        aiErrNoKey: "GEMINI_API_KEY is not set on the server.", aiErrGeneric: "Error: ",
         form1Title: "1. IT Load & Rack Density", form1Racks: "Total Racks", form1Dens: "Density", form2Title: "2. Data Hall Containment Pitch",
         form3Title: "3. Required Airflow (AC)", form3LcTitle: "4. Required CDU (LC)", form4Title: "5. Required FWU Height (H)", form4Type: "Type", form4Units: "Total Active Units", form4Air: "Airflow/unit", form4Req: "Req. H",
         form5Title: "6. RA Space under Beam", form5Clear: "Clear Height", form5Equip: "Total Equip H",
@@ -100,6 +106,10 @@ function changeLang() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
     });
     const btnAnim = document.getElementById('btnAnimToggle');
     btnAnim.innerText = isAnimRunning ? translations[currentLang].btnAnimPause : translations[currentLang].btnAnimPlay;
@@ -2027,5 +2037,170 @@ document.getElementById('beCanvas').addEventListener('mousedown', e => {
 });
 
 refreshRackTypeOptions();
+
+// ══════════════════════════════════════════════════════════════
+// AI 어시스턴트 — Gemini를 로컬 프록시(server.js, /api/chat)를 통해서만 호출한다.
+// API 키는 서버의 .env에만 보관되고 브라우저에는 절대 전달되지 않는다.
+// 모델은 set_value 함수 호출로 이 앱의 입력값을 직접 바꿀 수 있다(간단한 1턴 tool-use 루프).
+// ══════════════════════════════════════════════════════════════
+let aiHistory = [];
+let aiBusy = false;
+
+const AI_TOOL_DECLARATIONS = [{
+    name: 'set_value',
+    description: '데이터홀 검토 프로그램의 입력값 하나를 변경한다.',
+    parameters: {
+        type: 'OBJECT',
+        properties: {
+            field: { type: 'STRING', description: '변경할 필드 ID (아래 필드 목록 중 하나)' },
+            value: { type: 'STRING', description: '설정할 값 — 숫자든 코드값이든 항상 문자열로 전달' }
+        },
+        required: ['field', 'value']
+    }
+}];
+
+// allInputs(script.js 상단)의 각 id는 'lbl'+Id 규칙의 번역 키를 갖고 있으므로(예: rHA→lblRHA)
+// 별도 표를 손으로 관리하지 않고 그대로 재사용해 필드 설명을 만든다.
+function buildAIFieldMeta() {
+    const t = translations.ko;
+    const meta = {};
+    allInputs.forEach(id => {
+        const key = 'lbl' + id.charAt(0).toUpperCase() + id.slice(1);
+        meta[id] = t[key] || id;
+    });
+    const blockList = beLoadBlocks().map(b => `block:${b.id}(${b.name})`).join(', ') || '없음';
+    meta.rackType = `${t.lblRackType} — 'general' 또는 저장된 블록 중 하나: ${blockList}`;
+    meta.cduLoc = `${t.lblCduLoc} — 'gallery' 또는 'hall'`;
+    meta.acHMode = `${t.lblAcHMode} — 'auto', 'manual', 'count' 중 하나`;
+    meta.fwuType = `${t.lblFwuType} — 'A', 'B', 'C' 중 하나`;
+    return meta;
+}
+
+function buildAISystemInstruction() {
+    const meta = buildAIFieldMeta();
+    const fieldList = Object.entries(meta).map(([id, label]) => `- ${id}: ${label}`).join('\n');
+    return `당신은 "Datahall 검토 프로그램"(데이터센터 IT랙·냉각·건축 간섭 검토 도구)에 내장된 AI 어시스턴트입니다.
+질문에는 한국어로 간결히 답하세요. 사용자가 값 변경을 요청하면 set_value 함수를 호출해 직접 바꾸고, 무엇을 왜 바꿨는지 한두 문장으로 설명하세요.
+근거 없는 추측으로 값을 바꾸지 말고, 필요한 정보가 부족하면 되물으세요. 각 사용자 메시지 앞에는 현재 설계 상태(JSON)가 자동으로 첨부됩니다.
+
+변경 가능한 필드 목록:
+${fieldList}`;
+}
+
+function buildAIContext() {
+    return {
+        currentValues: getFormData(),
+        summary: document.getElementById('formulaBox').innerText,
+        rackDensityCard: document.getElementById('resRackDensity').innerText,
+        planFitCard: document.getElementById('resPlanFit').innerText
+    };
+}
+
+function openAIAssistant() {
+    document.getElementById('aiOverlay').style.display = 'flex';
+    document.getElementById('aiInput').focus();
+}
+function closeAIAssistant() {
+    document.getElementById('aiOverlay').style.display = 'none';
+}
+
+function aiAppendMsg(role, text) {
+    const log = document.getElementById('aiLog');
+    const div = document.createElement('div');
+    div.className = 'ai-msg ' + role;
+    div.innerText = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    return div;
+}
+
+async function callGemini(contents) {
+    const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents,
+            systemInstruction: { parts: [{ text: buildAISystemInstruction() }] },
+            tools: [{ functionDeclarations: AI_TOOL_DECLARATIONS }]
+        })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || 'API error');
+    return data;
+}
+
+// set_value 함수 호출을 실제 DOM에 반영 — fwuType은 라디오 그룹이라 별도 처리
+function aiApplySetValue(field, value) {
+    if (field === 'fwuType') {
+        const radio = document.querySelector(`input[name="fwuType"][value="${value}"]`);
+        if (!radio) return `${field}: 유효하지 않은 값 (${value})`;
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+        return `${field} → ${value}`;
+    }
+    const el = document.getElementById(field);
+    if (!el) return `${field}: 알 수 없는 필드`;
+    if (el.tagName === 'SELECT' && ![...el.options].some(o => o.value === value)) {
+        return `${field}: 유효하지 않은 값 (${value})`;
+    }
+    el.value = value;
+    el.dispatchEvent(new Event('input'));
+    el.dispatchEvent(new Event('change'));
+    return `${field} → ${value}`;
+}
+
+async function sendAIMessage() {
+    if (aiBusy) return;
+    const input = document.getElementById('aiInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    aiAppendMsg('user', text);
+
+    const contextMsg = '[현재 설계 상태]\n' + JSON.stringify(buildAIContext());
+    aiHistory.push({ role: 'user', parts: [{ text: contextMsg + '\n\n[사용자 메시지]\n' + text }] });
+
+    aiBusy = true;
+    const thinking = aiAppendMsg('model thinking', '...');
+    try {
+        let data = await callGemini(aiHistory);
+        let candidate = data.candidates && data.candidates[0];
+        if (!candidate) throw new Error('빈 응답 (candidates 없음)');
+
+        let parts = candidate.content.parts || [];
+        aiHistory.push({ role: 'model', parts });
+
+        const functionCalls = parts.filter(p => p.functionCall).map(p => p.functionCall);
+        const textParts = parts.filter(p => p.text).map(p => p.text).join('\n');
+
+        if (functionCalls.length) {
+            const results = functionCalls.map(fc => aiApplySetValue(fc.args.field, fc.args.value));
+            thinking.remove();
+            aiAppendMsg('applied', '✅ ' + results.join(', '));
+
+            const funcResponseParts = functionCalls.map((fc, i) => ({
+                functionResponse: { name: fc.name, response: { result: results[i] } }
+            }));
+            aiHistory.push({ role: 'user', parts: funcResponseParts });
+
+            data = await callGemini(aiHistory);
+            candidate = data.candidates && data.candidates[0];
+            if (candidate) {
+                aiHistory.push({ role: 'model', parts: candidate.content.parts });
+                const finalText = candidate.content.parts.filter(p => p.text).map(p => p.text).join('\n');
+                if (finalText) aiAppendMsg('model', finalText);
+            }
+        } else {
+            thinking.remove();
+            if (textParts) aiAppendMsg('model', textParts);
+        }
+    } catch (e) {
+        thinking.remove();
+        aiAppendMsg('error', translations[currentLang].aiErrGeneric + e.message);
+    } finally {
+        aiBusy = false;
+    }
+}
 
 changeLang();

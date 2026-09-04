@@ -40,17 +40,24 @@
 
 ## 🛠 기술 스택 (Tech Stack)
 
-* **Frontend:** HTML5, CSS3, Vanilla JavaScript (외부 라이브러리/프레임워크 미사용)
-* **Graphics:** DOM 기반 CSS Transform & SVG
-* **Deployment:** 정적 웹 호스팅 환경(Vercel, GitHub Pages 등)에서 즉시 구동 가능
+* **Frontend:** HTML5, CSS3, Vanilla JavaScript
+* **Graphics:** DOM 기반 CSS Transform & SVG, 3D VIEW는 Three.js(CDN)
+* **AI 어시스턴트:** Node.js 로컬 프록시 서버(`server.js`) + Gemini API
+* **Deployment:** 정적 웹 호스팅 환경(Vercel, GitHub Pages 등)에서도 구동 가능 — 단, AI 어시스턴트는 `server.js`를 직접 실행해야 동작
 
 ## 🚀 설치 및 실행 방법 (Installation & Usage)
 
-별도의 빌드 과정이나 서버 설치가 필요 없는 순수 프론트엔드 프로젝트입니다.
+**기본 기능**(도면·계산·랙 블록 편집기·3D 뷰)은 빌드나 서버 없이 바로 씁니다.
 
 1. 본 저장소의 파일들을 다운로드합니다. (`index.html`, `style.css`, `script.js`)
 2. 웹 브라우저(Chrome, Edge 등)에서 `index.html` 파일을 더블클릭하여 실행합니다.
 3. 좌측 입력 패널에서 **데이터홀, 설비, 건축 제원**을 수정하면 우측 도면에 즉각 반영됩니다.
+
+**AI 어시스턴트**(🤖 버튼)를 쓰려면 API 키를 서버에서만 보관하는 로컬 프록시가 필요합니다.
+
+1. `.env.example`을 복사해 `.env`로 저장하고, [Google AI Studio](https://aistudio.google.com)에서 발급받은 `GEMINI_API_KEY`를 채웁니다.
+2. 터미널에서 `node server.js` 실행 후 `http://localhost:8899` 접속 (index.html을 직접 여는 대신 이 주소로 접속).
+3. `.env`는 절대 커밋하지 마세요 (`.gitignore`에 이미 포함되어 있습니다).
 
 ## ⌨️ 치수 측정 툴 단축키 (Shortcuts)
 
