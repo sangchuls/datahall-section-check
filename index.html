@@ -23,6 +23,7 @@
             <button class="action-btn" onclick="saveData()" data-i18n="btnSave">💾 브라우저 임시저장</button>
             <button class="action-btn" onclick="loadData()" data-i18n="btnLoad">📂 파일 불러오기(.json)</button>
             <button class="action-btn export" onclick="exportData()" data-i18n="btnExport">⬇️ 내보내기(.json)</button>
+            <button class="action-btn" onclick="openBlockEditor()" data-i18n="btnBlockEditor">🧩 랙 블록 편집기</button>
         </div>
     </div>
     
@@ -67,6 +68,13 @@
 
             <div class="section">
                 <div class="section-title" data-i18n="sec2">[데이터홀] IT 랙 제원</div>
+                <div class="input-group"><label data-i18n="lblRackType">랙 타입</label>
+                    <select id="rackType" class="sel-wide">
+                        <option value="general" selected data-i18n="valRackGeneral">일반랙</option>
+                        <option value="vr" data-i18n="valRackVR">Vera Rubin NVL72</option>
+                    </select>
+                </div>
+                <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRackKw">랙당 부하 (kW)</label><input type="number" id="rackKw" value="225.8" step="0.1" min="0.1" class="highlight-input"></div>
                 <div class="input-group"><label data-i18n="lblRW">랙 폭 (W, m)</label><input type="number" id="rW" value="0.6" step="0.1"></div>
                 <div class="input-group"><label data-i18n="lblRD">랙 깊이 (D, m)</label><input type="number" id="rD" value="1.2" step="0.1"></div>
                 <div class="input-group"><label style="color:var(--accent);" data-i18n="lblRH">랙 높이 (H, m)</label><input type="number" id="rH" value="2.3" step="0.1" class="highlight-input"></div>
@@ -171,6 +179,43 @@
             </div>
         </div>
         
+    </div>
+</div>
+
+<div class="block-editor-overlay" id="blockEditorOverlay" style="display:none;">
+    <div class="block-editor-panel">
+        <div class="be-header">
+            <div>
+                <h2 style="margin:0;font-size:16px;color:var(--primary);" data-i18n="beTitle">🧩 랙 블록 편집기</h2>
+                <div style="font-size:11px;color:#7f8c8d;margin-top:2px;" data-i18n="beSubtitle">GPU 서버 · 일반 서버 · CDU를 배치해 재사용 가능한 랙 블록을 설계합니다.</div>
+            </div>
+            <div class="be-toolbar">
+                <button class="action-btn" onclick="beAddUnit('gpu')">➕ <span data-i18n="beAddGpu">GPU 서버</span></button>
+                <button class="action-btn" onclick="beAddUnit('general')">➕ <span data-i18n="beAddGeneral">일반 서버</span></button>
+                <button class="action-btn" onclick="beAddUnit('cdu')">➕ <span data-i18n="beAddCdu">CDU</span></button>
+                <button class="action-btn" onclick="beAddRow()">➕ <span data-i18n="beAddRowBtn">열 추가</span></button>
+                <button class="action-btn" onclick="beRemoveRow()" style="color:var(--accent);">➖ <span data-i18n="beRemoveRowBtn">열 삭제</span></button>
+                <button class="action-btn" onclick="beClearCanvas()" style="color:var(--accent);">🗑 <span data-i18n="beClearBtn">전체 지우기</span></button>
+                <button class="action-btn export" onclick="beSaveAs()">💾 <span data-i18n="beSaveAsBtn">다른 이름으로 저장</span></button>
+                <button class="action-btn" onclick="closeBlockEditor()">✕ <span data-i18n="beClose">닫기</span></button>
+            </div>
+        </div>
+        <div class="be-body">
+            <div class="be-canvas-wrap">
+                <div class="be-summary" id="beSummary"></div>
+                <div class="be-canvas" id="beCanvas"></div>
+            </div>
+            <div class="be-sidebar">
+                <div class="section">
+                    <div class="section-title" data-i18n="beProps">선택한 유닛 속성</div>
+                    <div id="beUnitProps"><div style="font-size:11px;color:#95a5a6;" data-i18n="beNoSelect">캔버스에서 유닛을 클릭해 선택하세요.</div></div>
+                </div>
+                <div class="section" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+                    <div class="section-title" data-i18n="beSaved">저장된 블록</div>
+                    <div id="beSavedList" style="overflow-y:auto; flex:1;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

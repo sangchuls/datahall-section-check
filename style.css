@@ -113,6 +113,17 @@ body.pause-animations .flow-arrow { animation-play-state: paused !important; }
 @keyframes airflow_up { from { background-position: 0 0; } to { background-position: 0 -16px; } }
 
 .rack-block { position: absolute; border: 1px solid #7f8c8d; background: #ffffff; box-sizing: border-box; z-index: 5; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 3px rgba(0,0,0,0.05); }
+.rack-block.vr { border: 1px solid #27ae60; background: #eaf6ec; box-shadow: inset 0 0 4px rgba(39,174,96,0.15); }
+.rack-block .rack-kw { font-size: 7px; font-weight: bold; color: #1e8449; pointer-events: none; letter-spacing: -0.3px; }
+.sect-rack.vr { background: #eaf6ec; border-color: #27ae60; color: #1e8449; }
+/* 랙 블록 편집기에서 저장한 유닛 타입별 색상 (편집기와 동일 팔레트) */
+.rack-block.blk-gpu { border: 1px solid #8e44ad; background: #f3e8fb; box-shadow: inset 0 0 4px rgba(142,68,173,0.15); }
+.rack-block.blk-gpu .rack-kw { color: #6c3483; }
+.rack-block.blk-general { border: 1px solid #34495e; background: #eaedf1; box-shadow: inset 0 0 4px rgba(52,73,94,0.15); }
+.rack-block.blk-general .rack-kw { color: #2c3e50; }
+.rack-block.blk-cdu { border: 1px solid #27ae60; background: #eaf6ec; box-shadow: inset 0 0 4px rgba(39,174,96,0.15); }
+.rack-block.blk-cdu .rack-kw { color: #1e8449; }
+.sect-rack.blk { background: #f3e8fb; border-color: #8e44ad; color: #6c3483; }
 .aisle-ha { position: absolute; background: rgba(231, 76, 60, 0.05); border: 1px dashed rgba(231, 76, 60, 0.4); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--accent); font-weight: bold; z-index: 2; box-sizing: border-box; }
 .aisle-ca { position: absolute; background: rgba(52, 152, 219, 0.05); border: 1px dashed rgba(52, 152, 219, 0.4); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--cold); font-weight: bold; z-index: 2; box-sizing: border-box; }
 .aisle-ha span, .aisle-ca span { writing-mode: vertical-rl; text-orientation: mixed; letter-spacing: 2px;}
@@ -138,3 +149,29 @@ body.pause-animations .fan-svg, body.pause-animations .sa-air { animation-play-s
 
 .btn-small { padding: 2px 6px; font-size: 10px; background: #eee; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; }
 .btn-small:hover { background: #ddd; }
+
+/* ── 랙 블록 편집기 ── */
+.block-editor-overlay { position: fixed; inset: 0; background: rgba(20,25,30,0.55); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+.block-editor-panel { background: #fff; width: 94vw; height: 88vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
+.be-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 15px; border-bottom: 2px solid var(--line); flex-shrink: 0; }
+.be-toolbar { display: flex; gap: 6px; flex-wrap: wrap; }
+.be-body { flex: 1; display: flex; min-height: 0; }
+.be-canvas-wrap { flex: 1; overflow: auto; background: #fafbfc; background-image: linear-gradient(#f1f1f1 1px, transparent 1px), linear-gradient(90deg, #f1f1f1 1px, transparent 1px); background-size: 20px 20px; position: relative; padding: 16px 24px 60px; }
+.be-summary { font-size: 11px; color: var(--secondary); font-weight: bold; background: rgba(255,255,255,0.9); display: inline-block; padding: 4px 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 30px; }
+.be-canvas { display: flex; flex-direction: column; gap: 26px; }
+.be-row { position: relative; flex-shrink: 0; }
+.be-row-header { position: absolute; top: -18px; left: 0; font-size: 10px; font-weight: bold; color: #95a5a6; cursor: pointer; padding: 2px 8px; border-radius: 3px 3px 0 0; transition: background .15s, color .15s; }
+.be-row-header:hover { background: #ecf0f1; color: var(--secondary); }
+.be-row-header.active { color: #fff; background: var(--primary); }
+.be-row-baseline { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: #95a5a6; }
+.be-unit { position: absolute; bottom: 2px; border: 2px solid; border-radius: 3px; box-sizing: border-box; cursor: grab; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; color: #fff; user-select: none; text-align: center; line-height: 1.3; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+.be-unit.selected { outline: 3px solid #2980b9; outline-offset: 2px; z-index: 5; }
+.be-unit.dragging { cursor: grabbing; opacity: 0.85; z-index: 10; }
+.be-unit.snap-attach { box-shadow: 0 0 0 2px #e74c3c inset, 0 2px 4px rgba(0,0,0,0.15); }
+.be-gap-badge { position: absolute; bottom: -22px; font-size: 10px; color: #e67e22; font-weight: bold; background: #fff; padding: 1px 5px; border-radius: 3px; border: 1px dashed #e67e22; transform: translateX(-50%); white-space: nowrap; pointer-events: none; }
+.be-sidebar { width: 280px; flex-shrink: 0; border-left: 1px solid var(--line); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fdfdfd; }
+.be-saved-item { border: 1px solid #e1e4e8; border-radius: 4px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; background: #fff; }
+.be-saved-item .name { font-weight: bold; color: var(--primary); display: block; }
+.be-saved-item .meta { color: #7f8c8d; font-size: 10px; display: block; margin-top: 1px; }
+.be-saved-item .row { display: flex; gap: 4px; margin-top: 5px; }
+.be-saved-item .row button { flex: 1; }
