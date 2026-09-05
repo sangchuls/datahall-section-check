@@ -2125,8 +2125,9 @@ async function callGemini(contents) {
         })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
-    if (data.error) throw new Error(typeof data.error === 'string' ? data.error : data.error.message || 'API error');
+    // 서버가 자체적으로 낸 에러는 문자열, Gemini가 돌려준 에러는 {code,message,status} 객체이므로 둘 다 처리
+    const errMsg = data.error && (typeof data.error === 'string' ? data.error : data.error.message);
+    if (!res.ok || errMsg) throw new Error(errMsg || ('HTTP ' + res.status));
     return data;
 }
 
