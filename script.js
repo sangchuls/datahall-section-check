@@ -28,7 +28,10 @@ const translations = {
         msg3DFail: "3D 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.", msg3DEmpty: "먼저 도면이 생성되어야 합니다.",
         btnAI: "🤖 AI 어시스턴트", aiTitle: "🤖 AI 어시스턴트", aiSubtitle: "현재 설계값을 바탕으로 질문하거나 값 변경을 요청하세요. (Gemini)",
         aiSend: "전송", aiPlaceholder: "예: IT Load를 6000kW로 바꾸고 CDU 필요 대수 알려줘",
-        aiErrNoKey: "서버에 GEMINI_API_KEY가 설정되지 않았습니다.", aiErrGeneric: "오류: ",
+        aiErrGeneric: "오류: ",
+        aiNeedKeyMsg: "이 앱을 소유자의 서버 없이 쓰고 계시네요. 본인의 Gemini API 키를 입력하면 이 브라우저에만 저장되어 계속 사용할 수 있습니다.",
+        aiSaveKey: "저장하고 계속하기", aiGetKeyLink: "키 발급받기 →", aiKeySaved: "🔑 키가 저장되었습니다. 이어서 진행합니다...",
+        aiKeyChangeConfirm: "저장된 키를 새 키로 바꿀까요?",
         form1Title: "1. IT부하 및 랙 밀도", form1Racks: "총 랙", form1Dens: "밀도", form2Title: "2. 데이터홀 Containment Pitch",
         form3Title: "3. 필요 총 풍량 (AC)", form3LcTitle: "4. 필요 CDU 대수 (LC)", form4Title: "5. FWU 요구 높이 (H)", form4Type: "타입", form4Units: "총 유효대수", form4Air: "1대당 풍량", form4Req: "요구H",
         form5Title: "6. 보 밑 RA공간", form5Clear: "순층고", form5Equip: "장비총고",
@@ -77,7 +80,10 @@ const translations = {
         msg3DFail: "Failed to load the 3D library. Please check your internet connection.", msg3DEmpty: "Generate a drawing first.",
         btnAI: "🤖 AI Assistant", aiTitle: "🤖 AI Assistant", aiSubtitle: "Ask about the current design or request value changes. (Gemini)",
         aiSend: "Send", aiPlaceholder: "e.g. Set IT Load to 6000kW and tell me the required CDU count",
-        aiErrNoKey: "GEMINI_API_KEY is not set on the server.", aiErrGeneric: "Error: ",
+        aiErrGeneric: "Error: ",
+        aiNeedKeyMsg: "You're using this app without the owner's server. Enter your own Gemini API key — it's stored only in this browser and you can keep using it.",
+        aiSaveKey: "Save and continue", aiGetKeyLink: "Get a key →", aiKeySaved: "🔑 Key saved. Continuing...",
+        aiKeyChangeConfirm: "Replace the saved key with a new one?",
         form1Title: "1. IT Load & Rack Density", form1Racks: "Total Racks", form1Dens: "Density", form2Title: "2. Data Hall Containment Pitch",
         form3Title: "3. Required Airflow (AC)", form3LcTitle: "4. Required CDU (LC)", form4Title: "5. Required FWU Height (H)", form4Type: "Type", form4Units: "Total Active Units", form4Air: "Airflow/unit", form4Req: "Req. H",
         form5Title: "6. RA Space under Beam", form5Clear: "Clear Height", form5Equip: "Total Equip H",
@@ -2104,6 +2110,30 @@ function closeAIAssistant() {
     document.getElementById('aiOverlay').style.display = 'none';
 }
 
+// 헤더를 드래그해 패널을 옮길 수 있게 한다 — 챗봇을 닫지 않고 다른 부분을 볼 수 있도록 위치를 비켜줄 때 사용
+(function initAIPanelDrag() {
+    const overlay = document.getElementById('aiOverlay');
+    const header = overlay.querySelector('.ai-header');
+    let dragging = false, startX = 0, startY = 0, startRight = 0, startBottom = 0;
+
+    header.addEventListener('mousedown', e => {
+        if (e.target.closest('button')) return; // 닫기 버튼 클릭은 드래그로 취급하지 않음
+        dragging = true;
+        startX = e.clientX; startY = e.clientY;
+        const rect = overlay.getBoundingClientRect();
+        startRight = window.innerWidth - rect.right;
+        startBottom = window.innerHeight - rect.bottom;
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - startX, dy = e.clientY - startY;
+        overlay.style.right = Math.max(0, startRight - dx) + 'px';
+        overlay.style.bottom = Math.max(0, startBottom - dy) + 'px';
+    });
+    document.addEventListener('mouseup', () => { dragging = false; });
+})();
+
 function aiAppendMsg(role, text) {
     const log = document.getElementById('aiLog');
     const div = document.createElement('div');
@@ -2114,21 +2144,68 @@ function aiAppendMsg(role, text) {
     return div;
 }
 
-async function callGemini(contents) {
-    const res = await fetch('/api/chat', {
+// ── 키 처리: 소유자는 로컬 서버(server.js, .env)로 자동 연결되고,
+//    (정적 배포 등으로) 그 서버가 없는 방문자는 본인 Gemini 키를 브라우저에 저장해 직접 호출한다 ──
+const AI_USER_KEY_STORAGE = 'userGeminiApiKey';
+const AI_DIRECT_MODEL = 'gemini-3.6-flash';
+
+function getUserGeminiKey() { return localStorage.getItem(AI_USER_KEY_STORAGE) || ''; }
+function setUserGeminiKey(key) {
+    if (key) localStorage.setItem(AI_USER_KEY_STORAGE, key);
+    else localStorage.removeItem(AI_USER_KEY_STORAGE);
+}
+function isNoServerKeyError(msg) { return typeof msg === 'string' && msg.indexOf('GEMINI_API_KEY') !== -1; }
+
+// 로컬 프록시(server.js) 호출을 시도한다. 성공하면 {ok:true,data}, 서버 자체가 없거나(정적 배포)
+// 키 미설정이면 {ok:false,fallback:true}, 그 외의 진짜 API 에러는 {ok:false,fallback:false,error}를 돌려준다.
+async function tryLocalProxy(requestBody) {
+    let res;
+    try {
+        res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
+    } catch (networkErr) {
+        return { ok: false, fallback: true }; // 서버 자체가 응답하지 않음
+    }
+    let data;
+    try {
+        data = await res.json();
+    } catch (parseErr) {
+        return { ok: false, fallback: true }; // 정적 호스팅이 HTML(404 등)을 돌려줌 → 서버 없음으로 간주
+    }
+    const errMsg = data.error && (typeof data.error === 'string' ? data.error : data.error.message);
+    if (res.ok && !errMsg) return { ok: true, data };
+    if (isNoServerKeyError(errMsg)) return { ok: false, fallback: true };
+    return { ok: false, fallback: false, error: errMsg || ('HTTP ' + res.status) };
+}
+
+async function callGeminiDirect(requestBody) {
+    const key = getUserGeminiKey();
+    if (!key) { const err = new Error('NEED_USER_KEY'); err.needKey = true; throw err; }
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_DIRECT_MODEL}:generateContent`;
+    const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents,
-            systemInstruction: { parts: [{ text: buildAISystemInstruction() }] },
-            tools: [{ functionDeclarations: AI_TOOL_DECLARATIONS }]
-        })
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify(requestBody)
     });
     const data = await res.json();
-    // 서버가 자체적으로 낸 에러는 문자열, Gemini가 돌려준 에러는 {code,message,status} 객체이므로 둘 다 처리
     const errMsg = data.error && (typeof data.error === 'string' ? data.error : data.error.message);
     if (!res.ok || errMsg) throw new Error(errMsg || ('HTTP ' + res.status));
     return data;
+}
+
+async function callGemini(contents) {
+    const requestBody = {
+        contents,
+        systemInstruction: { parts: [{ text: buildAISystemInstruction() }] },
+        tools: [{ functionDeclarations: AI_TOOL_DECLARATIONS }]
+    };
+    const proxyResult = await tryLocalProxy(requestBody);
+    if (proxyResult.ok) return proxyResult.data;
+    if (!proxyResult.fallback) throw new Error(proxyResult.error);
+    return await callGeminiDirect(requestBody);
 }
 
 // set_value 함수 호출을 실제 DOM에 반영 — fwuType은 라디오 그룹이라 별도 처리
@@ -2151,14 +2228,60 @@ function aiApplySetValue(field, value) {
     return `${field} → ${value}`;
 }
 
-async function sendAIMessage() {
+// 방문자가 방금 저장한 키로 자동 재시도할 수 있도록, 키가 없어 실패한 마지막 메시지를 기억해둔다
+let aiPendingRetryText = null;
+
+function aiShowKeySetup() {
+    const t = translations[currentLang];
+    const log = document.getElementById('aiLog');
+    document.querySelectorAll('.ai-msg.keysetup').forEach(el => el.remove());
+    const div = document.createElement('div');
+    div.className = 'ai-msg keysetup';
+    div.innerHTML =
+        '<div style="margin-bottom:6px;">' + t.aiNeedKeyMsg + '</div>' +
+        '<input type="password" id="aiKeyInput" placeholder="AIza..." style="width:100%;box-sizing:border-box;padding:6px;margin-bottom:6px;border:1px solid #ccc;border-radius:4px;font-size:12px;">' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<button class="btn-small" onclick="aiSaveUserKey()">' + t.aiSaveKey + '</button>' +
+            '<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-size:11px;">' + t.aiGetKeyLink + '</a>' +
+        '</div>';
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    document.getElementById('aiKeyInput').focus();
+}
+
+function aiSaveUserKey() {
+    const keyInput = document.getElementById('aiKeyInput');
+    const val = keyInput.value.trim();
+    if (!val) return;
+    setUserGeminiKey(val);
+    document.querySelectorAll('.ai-msg.keysetup').forEach(el => el.remove());
+    aiAppendMsg('applied', translations[currentLang].aiKeySaved);
+    if (aiPendingRetryText) {
+        const retryText = aiPendingRetryText;
+        aiPendingRetryText = null;
+        aiRunTurn(retryText);
+    }
+}
+
+// 저장된 개인 키를 언제든 바꾸거나 지울 수 있게 (AI 패널 헤더의 🔑 버튼에서 호출)
+function aiChangeUserKey() {
+    const current = getUserGeminiKey();
+    if (current && !confirm(translations[currentLang].aiKeyChangeConfirm)) return;
+    aiShowKeySetup();
+}
+
+function sendAIMessage() {
     if (aiBusy) return;
     const input = document.getElementById('aiInput');
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
     aiAppendMsg('user', text);
+    aiRunTurn(text);
+}
 
+async function aiRunTurn(text) {
+    if (aiBusy) return;
     const contextMsg = '[현재 설계 상태]\n' + JSON.stringify(buildAIContext());
     aiHistory.push({ role: 'user', parts: [{ text: contextMsg + '\n\n[사용자 메시지]\n' + text }] });
 
@@ -2198,7 +2321,13 @@ async function sendAIMessage() {
         }
     } catch (e) {
         thinking.remove();
-        aiAppendMsg('error', translations[currentLang].aiErrGeneric + e.message);
+        if (e.needKey) {
+            aiHistory.pop(); // 키가 없어 실패한 턴은 히스토리에서 제거 — 재시도 시 다시 붙는다
+            aiPendingRetryText = text;
+            aiShowKeySetup();
+        } else {
+            aiAppendMsg('error', translations[currentLang].aiErrGeneric + e.message);
+        }
     } finally {
         aiBusy = false;
     }

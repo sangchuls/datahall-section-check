@@ -175,9 +175,10 @@ body.pause-animations .fan-svg, body.pause-animations .sa-air { animation-play-s
 .be-saved-item .row button { flex: 1; }
 
 /* ── AI 어시스턴트 ── */
-.ai-overlay { position: fixed; inset: 0; background: rgba(20,25,30,0.55); z-index: 2100; display: flex; align-items: center; justify-content: center; }
-.ai-panel { background: #fff; width: 480px; max-width: 92vw; height: 640px; max-height: 88vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
-.ai-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 15px; border-bottom: 2px solid var(--line); flex-shrink: 0; }
+/* 뒷배경을 가리지 않는 플로팅 패널 — 챗봇을 열어둔 채로 앱의 다른 부분을 그대로 조작할 수 있다 */
+.ai-overlay { position: fixed; bottom: 20px; right: 20px; width: 400px; height: 600px; max-width: calc(100vw - 40px); max-height: calc(100vh - 40px); z-index: 2100; pointer-events: none; }
+.ai-panel { pointer-events: auto; background: #fff; width: 100%; height: 100%; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.28); border: 1px solid #d8dde2; }
+.ai-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 15px; border-bottom: 2px solid var(--line); flex-shrink: 0; cursor: move; }
 .ai-header h2 { margin: 0; font-size: 15px; color: var(--primary); }
 .ai-subtitle { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
 .ai-body { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 10px; gap: 8px; }
@@ -188,5 +189,7 @@ body.pause-animations .fan-svg, body.pause-animations .sa-air { animation-play-s
 .ai-msg.applied { align-self: center; background: #eafaf1; color: #1e8449; font-size: 11px; border: 1px dashed #27ae60; }
 .ai-msg.error { align-self: center; background: #fdecea; color: var(--accent); font-size: 11px; border: 1px dashed var(--accent); }
 .ai-msg.thinking { color: #95a5a6; font-style: italic; background: transparent; }
+.ai-msg.keysetup { align-self: stretch; max-width: 100%; background: #fff8e6; border: 1px dashed var(--standby); color: #7a5c00; }
+.ai-msg.keysetup a { color: #2980b9; }
 .ai-inputRow { display: flex; gap: 6px; flex-shrink: 0; }
 .ai-inputRow input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }

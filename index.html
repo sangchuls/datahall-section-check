@@ -236,7 +236,10 @@
                 <h2 data-i18n="aiTitle">🤖 AI 어시스턴트</h2>
                 <div class="ai-subtitle" data-i18n="aiSubtitle">현재 설계값을 바탕으로 질문하거나 값 변경을 요청하세요. (Gemini)</div>
             </div>
-            <button class="action-btn" onclick="closeAIAssistant()">✕ <span data-i18n="beClose">닫기</span></button>
+            <div style="display:flex; gap:4px; flex-shrink:0;">
+                <button class="action-btn" onclick="aiChangeUserKey()" title="개인 Gemini API 키 설정/변경">🔑</button>
+                <button class="action-btn" onclick="closeAIAssistant()">✕ <span data-i18n="beClose">닫기</span></button>
+            </div>
         </div>
         <div class="ai-body">
             <div class="ai-log" id="aiLog"></div>
