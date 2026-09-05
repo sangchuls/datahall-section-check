@@ -42,8 +42,8 @@
 
 * **Frontend:** HTML5, CSS3, Vanilla JavaScript
 * **Graphics:** DOM 기반 CSS Transform & SVG, 3D VIEW는 Three.js(CDN)
-* **AI 어시스턴트:** Node.js 로컬 프록시 서버(`server.js`) + Gemini API
-* **Deployment:** 정적 웹 호스팅 환경(Vercel, GitHub Pages 등)에서도 구동 가능 — 단, AI 어시스턴트는 `server.js`를 직접 실행해야 동작
+* **AI 어시스턴트:** Node.js 로컬 프록시 서버(`server.js`) + Gemini / Claude / GPT(OpenAI) / 회사 전용(OpenAI 호환) LLM 중 선택
+* **Deployment:** 정적 웹 호스팅 환경(Vercel, GitHub Pages 등)에서도 구동 가능 — `server.js` 없이 배포하면 각 방문자가 자신의 API 키를 입력해 AI 어시스턴트를 계속 쓸 수 있음
 
 ## 🚀 설치 및 실행 방법 (Installation & Usage)
 
@@ -53,11 +53,13 @@
 2. 웹 브라우저(Chrome, Edge 등)에서 `index.html` 파일을 더블클릭하여 실행합니다.
 3. 좌측 입력 패널에서 **데이터홀, 설비, 건축 제원**을 수정하면 우측 도면에 즉각 반영됩니다.
 
-**AI 어시스턴트**(🤖 버튼)를 쓰려면 API 키를 서버에서만 보관하는 로컬 프록시가 필요합니다.
+**AI 어시스턴트**(🤖 버튼)는 Gemini / Claude / GPT(OpenAI) / 회사 전용 LLM 중 골라 쓸 수 있고, 채팅창 안의 드롭다운으로 전환합니다.
 
-1. `.env.example`을 복사해 `.env`로 저장하고, [Google AI Studio](https://aistudio.google.com)에서 발급받은 `GEMINI_API_KEY`를 채웁니다.
-2. 터미널에서 `node server.js` 실행 후 `http://localhost:8899` 접속 (index.html을 직접 여는 대신 이 주소로 접속).
-3. `.env`는 절대 커밋하지 마세요 (`.gitignore`에 이미 포함되어 있습니다).
+- **본인이 직접 실행할 때(자동 연결):** API 키를 서버에서만 보관하는 로컬 프록시를 켭니다.
+  1. `.env.example`을 복사해 `.env`로 저장하고, 쓸 공급자의 키만 채웁니다 (전부 채울 필요 없음).
+  2. 터미널에서 `node server.js` 실행 후 `http://localhost:8899` 접속 (index.html을 직접 여는 대신 이 주소로 접속).
+  3. `.env`는 절대 커밋하지 마세요 (`.gitignore`에 이미 포함되어 있습니다).
+- **서버 없이(정적 배포) 쓸 때:** `server.js`가 없거나 응답하지 않으면 채팅창에 개인 API 키 입력 카드가 뜹니다. 입력한 키는 그 브라우저에만 저장되고, 이후에는 자동으로 재사용됩니다.
 
 ## ⌨️ 치수 측정 툴 단축키 (Shortcuts)
 

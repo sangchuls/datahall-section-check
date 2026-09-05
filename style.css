@@ -181,6 +181,9 @@ body.pause-animations .fan-svg, body.pause-animations .sa-air { animation-play-s
 .ai-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 15px; border-bottom: 2px solid var(--line); flex-shrink: 0; cursor: move; }
 .ai-header h2 { margin: 0; font-size: 15px; color: var(--primary); }
 .ai-subtitle { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
+.ai-providerRow { display: flex; align-items: center; gap: 8px; padding: 6px 15px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.ai-providerRow label { font-size: 10px; color: #7f8c8d; }
+.ai-providerRow select { flex: 1; font-size: 11px; padding: 3px 4px; }
 .ai-body { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 10px; gap: 8px; }
 .ai-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
 .ai-msg { max-width: 88%; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }

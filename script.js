@@ -26,12 +26,14 @@ const translations = {
         resPlanFitOk: "기둥 사이 배치 가능 (OK)", resPlanFitErr: "공간 부족 (간섭 발생)",
         tabElev: "ELEVATION VIEW (입면)", tabSect: "SECTION VIEW (단면)", tab3D: "3D VIEW", tabPlan: "PLAN VIEW (데이터홀 & FWU 코디네이션)",
         msg3DFail: "3D 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.", msg3DEmpty: "먼저 도면이 생성되어야 합니다.",
-        btnAI: "🤖 AI 어시스턴트", aiTitle: "🤖 AI 어시스턴트", aiSubtitle: "현재 설계값을 바탕으로 질문하거나 값 변경을 요청하세요. (Gemini)",
+        btnAI: "🤖 AI 어시스턴트", aiTitle: "🤖 AI 어시스턴트", aiSubtitle: "현재 설계값을 바탕으로 질문하거나 값 변경을 요청하세요.",
         aiSend: "전송", aiPlaceholder: "예: IT Load를 6000kW로 바꾸고 CDU 필요 대수 알려줘",
         aiErrGeneric: "오류: ",
-        aiNeedKeyMsg: "이 앱을 소유자의 서버 없이 쓰고 계시네요. 본인의 Gemini API 키를 입력하면 이 브라우저에만 저장되어 계속 사용할 수 있습니다.",
+        aiNeedKeyMsg: "이 앱을 소유자의 서버 없이 쓰고 계시네요. 본인의 {provider} API 키를 입력하면 이 브라우저에만 저장되어 계속 사용할 수 있습니다.",
         aiSaveKey: "저장하고 계속하기", aiGetKeyLink: "키 발급받기 →", aiKeySaved: "🔑 키가 저장되었습니다. 이어서 진행합니다...",
         aiKeyChangeConfirm: "저장된 키를 새 키로 바꿀까요?",
+        aiCorsBlocked: "이 공급자는 브라우저에서 직접 호출을 막고 있는 것 같습니다. 소유자의 로컬 서버(node server.js)를 통해서만 쓸 수 있습니다.",
+        aiProviderLabel: "AI 공급자",
         form1Title: "1. IT부하 및 랙 밀도", form1Racks: "총 랙", form1Dens: "밀도", form2Title: "2. 데이터홀 Containment Pitch",
         form3Title: "3. 필요 총 풍량 (AC)", form3LcTitle: "4. 필요 CDU 대수 (LC)", form4Title: "5. FWU 요구 높이 (H)", form4Type: "타입", form4Units: "총 유효대수", form4Air: "1대당 풍량", form4Req: "요구H",
         form5Title: "6. 보 밑 RA공간", form5Clear: "순층고", form5Equip: "장비총고",
@@ -78,12 +80,14 @@ const translations = {
         resPlanFitOk: "Fits between columns (OK)", resPlanFitErr: "Not enough space (Clash)",
         tabElev: "ELEVATION VIEW", tabSect: "SECTION VIEW", tab3D: "3D VIEW", tabPlan: "PLAN VIEW (Data Hall & FWU)",
         msg3DFail: "Failed to load the 3D library. Please check your internet connection.", msg3DEmpty: "Generate a drawing first.",
-        btnAI: "🤖 AI Assistant", aiTitle: "🤖 AI Assistant", aiSubtitle: "Ask about the current design or request value changes. (Gemini)",
+        btnAI: "🤖 AI Assistant", aiTitle: "🤖 AI Assistant", aiSubtitle: "Ask about the current design or request value changes.",
         aiSend: "Send", aiPlaceholder: "e.g. Set IT Load to 6000kW and tell me the required CDU count",
         aiErrGeneric: "Error: ",
-        aiNeedKeyMsg: "You're using this app without the owner's server. Enter your own Gemini API key — it's stored only in this browser and you can keep using it.",
+        aiNeedKeyMsg: "You're using this app without the owner's server. Enter your own {provider} API key — it's stored only in this browser and you can keep using it.",
         aiSaveKey: "Save and continue", aiGetKeyLink: "Get a key →", aiKeySaved: "🔑 Key saved. Continuing...",
         aiKeyChangeConfirm: "Replace the saved key with a new one?",
+        aiCorsBlocked: "This provider appears to block direct browser calls. It can only be used through the owner's local server (node server.js).",
+        aiProviderLabel: "AI Provider",
         form1Title: "1. IT Load & Rack Density", form1Racks: "Total Racks", form1Dens: "Density", form2Title: "2. Data Hall Containment Pitch",
         form3Title: "3. Required Airflow (AC)", form3LcTitle: "4. Required CDU (LC)", form4Title: "5. Required FWU Height (H)", form4Type: "Type", form4Units: "Total Active Units", form4Air: "Airflow/unit", form4Req: "Req. H",
         form5Title: "6. RA Space under Beam", form5Clear: "Clear Height", form5Equip: "Total Equip H",
@@ -2045,25 +2049,36 @@ document.getElementById('beCanvas').addEventListener('mousedown', e => {
 refreshRackTypeOptions();
 
 // ══════════════════════════════════════════════════════════════
-// AI 어시스턴트 — Gemini를 로컬 프록시(server.js, /api/chat)를 통해서만 호출한다.
-// API 키는 서버의 .env에만 보관되고 브라우저에는 절대 전달되지 않는다.
+// AI 어시스턴트 — Gemini / Claude / GPT(OpenAI) / 회사 전용(OpenAI 호환) LLM을 하나의
+// 인터페이스로 다룬다. 내부적으로는 공급자에 무관한 대화 기록(aiHistory)을 유지하고,
+// 호출 시점에 선택된 공급자의 고유 요청/응답 형식으로 변환한다.
+// 키는 (1) 소유자의 로컬 서버(server.js, .env) 우선 → 없으면
+//      (2) 방문자가 브라우저에 직접 저장한 개인 키로 직접 호출, 순서로 시도한다.
 // 모델은 set_value 함수 호출로 이 앱의 입력값을 직접 바꿀 수 있다(간단한 1턴 tool-use 루프).
 // ══════════════════════════════════════════════════════════════
-let aiHistory = [];
-let aiBusy = false;
+const AI_PROVIDERS = {
+    gemini: { label: 'Gemini', keyPlaceholder: 'AIza...', keyLink: 'https://aistudio.google.com/apikey', needsBaseUrl: false },
+    claude: { label: 'Claude (Anthropic)', keyPlaceholder: 'sk-ant-...', keyLink: 'https://console.anthropic.com/settings/keys', needsBaseUrl: false },
+    openai: { label: 'GPT (OpenAI)', keyPlaceholder: 'sk-...', keyLink: 'https://platform.openai.com/api-keys', needsBaseUrl: false },
+    custom: { label: '회사 전용 LLM (OpenAI 호환)', keyPlaceholder: 'API 키', keyLink: '', needsBaseUrl: true }
+};
 
-const AI_TOOL_DECLARATIONS = [{
-    name: 'set_value',
-    description: '데이터홀 검토 프로그램의 입력값 하나를 변경한다.',
-    parameters: {
-        type: 'OBJECT',
-        properties: {
-            field: { type: 'STRING', description: '변경할 필드 ID (아래 필드 목록 중 하나)' },
-            value: { type: 'STRING', description: '설정할 값 — 숫자든 코드값이든 항상 문자열로 전달' }
-        },
-        required: ['field', 'value']
-    }
-}];
+let aiHistory = [];  // 정규화된 대화 기록: {role:'user', content} | {role:'assistant', content, toolCalls} | {role:'tool', toolCallId, name, result}
+let aiBusy = false;
+let aiPendingRetryText = null;
+
+function getAIProvider() { return localStorage.getItem('aiProvider') || 'gemini'; }
+function setAIProvider(p) { localStorage.setItem('aiProvider', p); }
+function getUserKey(provider) { return localStorage.getItem('userKey_' + provider) || ''; }
+function setUserKey(provider, key) {
+    if (key) localStorage.setItem('userKey_' + provider, key);
+    else localStorage.removeItem('userKey_' + provider);
+}
+function getUserBaseUrl() { return localStorage.getItem('userCustomBaseUrl') || ''; }
+function setUserBaseUrl(url) {
+    if (url) localStorage.setItem('userCustomBaseUrl', url);
+    else localStorage.removeItem('userCustomBaseUrl');
+}
 
 // allInputs(script.js 상단)의 각 id는 'lbl'+Id 규칙의 번역 키를 갖고 있으므로(예: rHA→lblRHA)
 // 별도 표를 손으로 관리하지 않고 그대로 재사용해 필드 설명을 만든다.
@@ -2104,10 +2119,18 @@ function buildAIContext() {
 
 function openAIAssistant() {
     document.getElementById('aiOverlay').style.display = 'flex';
+    document.getElementById('aiProviderSelect').value = getAIProvider();
     document.getElementById('aiInput').focus();
 }
 function closeAIAssistant() {
     document.getElementById('aiOverlay').style.display = 'none';
+}
+
+// 공급자를 바꾸면 대화 내역을 비운다 — 서로 다른 API 형식이 섞인 히스토리를 보내면 에러가 나기 때문
+function onAIProviderChange(value) {
+    setAIProvider(value);
+    aiHistory = [];
+    document.getElementById('aiLog').innerHTML = '';
 }
 
 // 헤더를 드래그해 패널을 옮길 수 있게 한다 — 챗봇을 닫지 않고 다른 부분을 볼 수 있도록 위치를 비켜줄 때 사용
@@ -2117,7 +2140,7 @@ function closeAIAssistant() {
     let dragging = false, startX = 0, startY = 0, startRight = 0, startBottom = 0;
 
     header.addEventListener('mousedown', e => {
-        if (e.target.closest('button')) return; // 닫기 버튼 클릭은 드래그로 취급하지 않음
+        if (e.target.closest('button, select')) return; // 버튼/드롭다운 조작은 드래그로 취급하지 않음
         dragging = true;
         startX = e.clientX; startY = e.clientY;
         const rect = overlay.getBoundingClientRect();
@@ -2144,27 +2167,150 @@ function aiAppendMsg(role, text) {
     return div;
 }
 
-// ── 키 처리: 소유자는 로컬 서버(server.js, .env)로 자동 연결되고,
-//    (정적 배포 등으로) 그 서버가 없는 방문자는 본인 Gemini 키를 브라우저에 저장해 직접 호출한다 ──
-const AI_USER_KEY_STORAGE = 'userGeminiApiKey';
-const AI_DIRECT_MODEL = 'gemini-3.6-flash';
-
-function getUserGeminiKey() { return localStorage.getItem(AI_USER_KEY_STORAGE) || ''; }
-function setUserGeminiKey(key) {
-    if (key) localStorage.setItem(AI_USER_KEY_STORAGE, key);
-    else localStorage.removeItem(AI_USER_KEY_STORAGE);
+// ── 도구(함수) 정의 — 하나의 스펙에서 공급자별 형식(Gemini/Claude/OpenAI)을 파생한다 ──
+const AI_TOOL_SPEC = {
+    name: 'set_value',
+    description: '데이터홀 검토 프로그램의 입력값 하나를 변경한다.',
+    properties: {
+        field: { type: 'string', description: '변경할 필드 ID (아래 필드 목록 중 하나)' },
+        value: { type: 'string', description: '설정할 값 — 숫자든 코드값이든 항상 문자열로 전달' }
+    },
+    required: ['field', 'value']
+};
+function aiToolsForGemini() {
+    return [{ functionDeclarations: [{
+        name: AI_TOOL_SPEC.name, description: AI_TOOL_SPEC.description,
+        parameters: { type: 'OBJECT', properties: {
+            field: { type: 'STRING', description: AI_TOOL_SPEC.properties.field.description },
+            value: { type: 'STRING', description: AI_TOOL_SPEC.properties.value.description }
+        }, required: AI_TOOL_SPEC.required }
+    }] }];
 }
-function isNoServerKeyError(msg) { return typeof msg === 'string' && msg.indexOf('GEMINI_API_KEY') !== -1; }
+function aiToolsForClaude() {
+    return [{ name: AI_TOOL_SPEC.name, description: AI_TOOL_SPEC.description,
+        input_schema: { type: 'object', properties: AI_TOOL_SPEC.properties, required: AI_TOOL_SPEC.required } }];
+}
+function aiToolsForOpenAI() {
+    return [{ type: 'function', function: { name: AI_TOOL_SPEC.name, description: AI_TOOL_SPEC.description,
+        parameters: { type: 'object', properties: AI_TOOL_SPEC.properties, required: AI_TOOL_SPEC.required } } }];
+}
+
+// ── 요청 본문 빌더: 정규화된 aiHistory → 공급자별 payload ──
+// Gemini·Claude는 한 턴에 여러 tool_result가 있으면 하나의 메시지로 묶어야 하므로(대화 역할 교대 규칙),
+// 연속된 'tool' 히스토리 항목을 모아서 처리한다. OpenAI는 tool_call_id별로 별도 메시지가 정석이라 그대로 둔다.
+function buildPayloadGemini(history, sysPrompt) {
+    const contents = [];
+    let i = 0;
+    while (i < history.length) {
+        const turn = history[i];
+        if (turn.role === 'user') { contents.push({ role: 'user', parts: [{ text: turn.content }] }); i++; }
+        else if (turn.role === 'assistant') {
+            const parts = [];
+            if (turn.content) parts.push({ text: turn.content });
+            // thoughtSignature: "thinking" 모델은 이전에 자신이 낸 functionCall을 다시 보낼 때
+            // 원래 응답에 붙어있던 서명을 그대로 실어 보내야 한다(없으면 API가 에러를 낸다).
+            (turn.toolCalls || []).forEach(tc => {
+                const part = { functionCall: { name: tc.name, args: tc.args } };
+                if (tc.thoughtSignature) part.thoughtSignature = tc.thoughtSignature;
+                parts.push(part);
+            });
+            contents.push({ role: 'model', parts }); i++;
+        } else {
+            const parts = [];
+            while (i < history.length && history[i].role === 'tool') {
+                parts.push({ functionResponse: { name: history[i].name, response: { result: history[i].result } } }); i++;
+            }
+            contents.push({ role: 'user', parts });
+        }
+    }
+    return { contents, systemInstruction: { parts: [{ text: sysPrompt }] }, tools: aiToolsForGemini() };
+}
+function parseResponseGemini(data) {
+    const c = data.candidates && data.candidates[0];
+    if (!c) throw new Error('빈 응답 (candidates 없음)');
+    const parts = c.content.parts || [];
+    const text = parts.filter(p => p.text).map(p => p.text).join('\n') || null;
+    const toolCalls = parts.filter(p => p.functionCall).map((p, i) => ({
+        id: 'call_' + i, name: p.functionCall.name, args: p.functionCall.args, thoughtSignature: p.thoughtSignature
+    }));
+    return { text, toolCalls };
+}
+
+function buildPayloadClaude(history, sysPrompt, model) {
+    const messages = [];
+    let i = 0;
+    while (i < history.length) {
+        const turn = history[i];
+        if (turn.role === 'user') { messages.push({ role: 'user', content: turn.content }); i++; }
+        else if (turn.role === 'assistant') {
+            const content = [];
+            if (turn.content) content.push({ type: 'text', text: turn.content });
+            (turn.toolCalls || []).forEach(tc => content.push({ type: 'tool_use', id: tc.id, name: tc.name, input: tc.args }));
+            messages.push({ role: 'assistant', content }); i++;
+        } else {
+            const results = [];
+            while (i < history.length && history[i].role === 'tool') {
+                results.push({ type: 'tool_result', tool_use_id: history[i].toolCallId, content: history[i].result }); i++;
+            }
+            messages.push({ role: 'user', content: results });
+        }
+    }
+    return { model: model || 'claude-sonnet-4-5-20250929', max_tokens: 1024, system: sysPrompt, messages, tools: aiToolsForClaude() };
+}
+function parseResponseClaude(data) {
+    const content = data.content || [];
+    const text = content.filter(c => c.type === 'text').map(c => c.text).join('\n') || null;
+    const toolCalls = content.filter(c => c.type === 'tool_use').map(c => ({ id: c.id, name: c.name, args: c.input }));
+    return { text, toolCalls };
+}
+
+function buildPayloadOpenAI(history, sysPrompt, model) {
+    const messages = [{ role: 'system', content: sysPrompt }];
+    history.forEach(turn => {
+        if (turn.role === 'user') messages.push({ role: 'user', content: turn.content });
+        else if (turn.role === 'assistant') {
+            const msg = { role: 'assistant', content: turn.content || null };
+            if (turn.toolCalls && turn.toolCalls.length) {
+                msg.tool_calls = turn.toolCalls.map(tc => ({ id: tc.id, type: 'function', function: { name: tc.name, arguments: JSON.stringify(tc.args) } }));
+            }
+            messages.push(msg);
+        } else if (turn.role === 'tool') {
+            messages.push({ role: 'tool', tool_call_id: turn.toolCallId, content: turn.result });
+        }
+    });
+    return { model: model || 'gpt-4o', messages, tools: aiToolsForOpenAI() };
+}
+function parseResponseOpenAI(data) {
+    const msg = data.choices && data.choices[0] && data.choices[0].message;
+    if (!msg) throw new Error('빈 응답 (choices 없음)');
+    const toolCalls = (msg.tool_calls || []).map(tc => ({ id: tc.id, name: tc.function.name, args: JSON.parse(tc.function.arguments || '{}') }));
+    return { text: msg.content || null, toolCalls };
+}
+
+function aiBuildPayload(provider, history, sysPrompt) {
+    if (provider === 'gemini') return buildPayloadGemini(history, sysPrompt);
+    if (provider === 'claude') return buildPayloadClaude(history, sysPrompt);
+    return buildPayloadOpenAI(history, sysPrompt); // openai, custom 공용(OpenAI 호환 형식)
+}
+function aiParseResponse(provider, data) {
+    if (provider === 'gemini') return parseResponseGemini(data);
+    if (provider === 'claude') return parseResponseClaude(data);
+    return parseResponseOpenAI(data);
+}
+
+// ── 키 처리: 소유자는 로컬 서버(server.js, .env)로 자동 연결되고,
+//    (정적 배포 등으로) 그 서버가 없는 방문자는 본인 키를 브라우저에 저장해 직접 호출한다 ──
+function isNoServerKeyError(msg) { return typeof msg === 'string' && (msg.indexOf('_API_KEY') !== -1 || msg.indexOf('BASE_URL') !== -1); }
 
 // 로컬 프록시(server.js) 호출을 시도한다. 성공하면 {ok:true,data}, 서버 자체가 없거나(정적 배포)
-// 키 미설정이면 {ok:false,fallback:true}, 그 외의 진짜 API 에러는 {ok:false,fallback:false,error}를 돌려준다.
-async function tryLocalProxy(requestBody) {
+// 그 공급자의 키 미설정이면 {ok:false,fallback:true}, 그 외의 진짜 API 에러는 {ok:false,fallback:false,error}를 돌려준다.
+async function tryLocalProxy(provider, payload) {
     let res;
     try {
         res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({ provider, payload })
         });
     } catch (networkErr) {
         return { ok: false, fallback: true }; // 서버 자체가 응답하지 않음
@@ -2181,31 +2327,49 @@ async function tryLocalProxy(requestBody) {
     return { ok: false, fallback: false, error: errMsg || ('HTTP ' + res.status) };
 }
 
-async function callGeminiDirect(requestBody) {
-    const key = getUserGeminiKey();
-    if (!key) { const err = new Error('NEED_USER_KEY'); err.needKey = true; throw err; }
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${AI_DIRECT_MODEL}:generateContent`;
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-        body: JSON.stringify(requestBody)
-    });
+// 방문자의 브라우저에서 공급자 API로 직접 호출할 URL/헤더
+function aiDirectEndpoint(provider, key) {
+    if (provider === 'gemini') {
+        return { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent`, headers: { 'x-goog-api-key': key } };
+    }
+    if (provider === 'claude') {
+        // anthropic-dangerous-direct-browser-access: Anthropic이 개인용 클라이언트 사이드 도구를 위해 공식 제공하는 CORS 우회 헤더
+        return { url: 'https://api.anthropic.com/v1/messages', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' } };
+    }
+    if (provider === 'openai') {
+        return { url: 'https://api.openai.com/v1/chat/completions', headers: { 'Authorization': 'Bearer ' + key } };
+    }
+    const base = (getUserBaseUrl() || '').replace(/\/$/, '');
+    return { url: base + '/chat/completions', headers: { 'Authorization': 'Bearer ' + key } };
+}
+
+async function callProviderDirect(provider, payload) {
+    const key = getUserKey(provider);
+    if (!key || (provider === 'custom' && !getUserBaseUrl())) {
+        const err = new Error('NEED_USER_KEY'); err.needKey = true; err.provider = provider; throw err;
+    }
+    const { url, headers } = aiDirectEndpoint(provider, key);
+    let res;
+    try {
+        res = await fetch(url, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, headers), body: JSON.stringify(payload) });
+    } catch (networkErr) {
+        // 브라우저 CORS 정책에 막힌 경우 등 — 키가 없어서가 아니라 이 공급자가 직접 호출을 막는 것이므로 그대로 알린다
+        throw new Error(translations[currentLang].aiCorsBlocked);
+    }
     const data = await res.json();
-    const errMsg = data.error && (typeof data.error === 'string' ? data.error : data.error.message);
+    const errMsg = data.error && (typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error)));
     if (!res.ok || errMsg) throw new Error(errMsg || ('HTTP ' + res.status));
     return data;
 }
 
-async function callGemini(contents) {
-    const requestBody = {
-        contents,
-        systemInstruction: { parts: [{ text: buildAISystemInstruction() }] },
-        tools: [{ functionDeclarations: AI_TOOL_DECLARATIONS }]
-    };
-    const proxyResult = await tryLocalProxy(requestBody);
-    if (proxyResult.ok) return proxyResult.data;
+async function callLLM(history) {
+    const provider = getAIProvider();
+    const payload = aiBuildPayload(provider, history, buildAISystemInstruction());
+    const proxyResult = await tryLocalProxy(provider, payload);
+    if (proxyResult.ok) return aiParseResponse(provider, proxyResult.data);
     if (!proxyResult.fallback) throw new Error(proxyResult.error);
-    return await callGeminiDirect(requestBody);
+    const directData = await callProviderDirect(provider, payload);
+    return aiParseResponse(provider, directData);
 }
 
 // set_value 함수 호출을 실제 DOM에 반영 — fwuType은 라디오 그룹이라 별도 처리
@@ -2228,21 +2392,26 @@ function aiApplySetValue(field, value) {
     return `${field} → ${value}`;
 }
 
-// 방문자가 방금 저장한 키로 자동 재시도할 수 있도록, 키가 없어 실패한 마지막 메시지를 기억해둔다
-let aiPendingRetryText = null;
-
-function aiShowKeySetup() {
+function aiShowKeySetup(provider) {
+    provider = provider || getAIProvider();
+    const cfg = AI_PROVIDERS[provider];
     const t = translations[currentLang];
     const log = document.getElementById('aiLog');
     document.querySelectorAll('.ai-msg.keysetup').forEach(el => el.remove());
     const div = document.createElement('div');
     div.className = 'ai-msg keysetup';
+    div.dataset.provider = provider;
+    const baseUrlRow = cfg.needsBaseUrl
+        ? '<input type="text" id="aiBaseUrlInput" placeholder="https://internal-llm.company.com/v1" value="' + getUserBaseUrl().replace(/"/g, '&quot;') + '" style="width:100%;box-sizing:border-box;padding:6px;margin-bottom:6px;border:1px solid #ccc;border-radius:4px;font-size:12px;">'
+        : '';
+    const linkHtml = cfg.keyLink ? '<a href="' + cfg.keyLink + '" target="_blank" rel="noopener" style="font-size:11px;">' + t.aiGetKeyLink + '</a>' : '';
     div.innerHTML =
-        '<div style="margin-bottom:6px;">' + t.aiNeedKeyMsg + '</div>' +
-        '<input type="password" id="aiKeyInput" placeholder="AIza..." style="width:100%;box-sizing:border-box;padding:6px;margin-bottom:6px;border:1px solid #ccc;border-radius:4px;font-size:12px;">' +
+        '<div style="margin-bottom:6px;">' + t.aiNeedKeyMsg.replace('{provider}', cfg.label) + '</div>' +
+        baseUrlRow +
+        '<input type="password" id="aiKeyInput" placeholder="' + cfg.keyPlaceholder + '" style="width:100%;box-sizing:border-box;padding:6px;margin-bottom:6px;border:1px solid #ccc;border-radius:4px;font-size:12px;">' +
         '<div style="display:flex;align-items:center;gap:10px;">' +
             '<button class="btn-small" onclick="aiSaveUserKey()">' + t.aiSaveKey + '</button>' +
-            '<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-size:11px;">' + t.aiGetKeyLink + '</a>' +
+            linkHtml +
         '</div>';
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
@@ -2250,11 +2419,18 @@ function aiShowKeySetup() {
 }
 
 function aiSaveUserKey() {
+    const box = document.querySelector('.ai-msg.keysetup');
+    const provider = (box && box.dataset.provider) || getAIProvider();
     const keyInput = document.getElementById('aiKeyInput');
     const val = keyInput.value.trim();
     if (!val) return;
-    setUserGeminiKey(val);
-    document.querySelectorAll('.ai-msg.keysetup').forEach(el => el.remove());
+    if (AI_PROVIDERS[provider].needsBaseUrl) {
+        const baseUrl = document.getElementById('aiBaseUrlInput').value.trim();
+        if (!baseUrl) return;
+        setUserBaseUrl(baseUrl);
+    }
+    setUserKey(provider, val);
+    if (box) box.remove();
     aiAppendMsg('applied', translations[currentLang].aiKeySaved);
     if (aiPendingRetryText) {
         const retryText = aiPendingRetryText;
@@ -2265,9 +2441,10 @@ function aiSaveUserKey() {
 
 // 저장된 개인 키를 언제든 바꾸거나 지울 수 있게 (AI 패널 헤더의 🔑 버튼에서 호출)
 function aiChangeUserKey() {
-    const current = getUserGeminiKey();
+    const provider = getAIProvider();
+    const current = getUserKey(provider);
     if (current && !confirm(translations[currentLang].aiKeyChangeConfirm)) return;
-    aiShowKeySetup();
+    aiShowKeySetup(provider);
 }
 
 function sendAIMessage() {
@@ -2283,48 +2460,34 @@ function sendAIMessage() {
 async function aiRunTurn(text) {
     if (aiBusy) return;
     const contextMsg = '[현재 설계 상태]\n' + JSON.stringify(buildAIContext());
-    aiHistory.push({ role: 'user', parts: [{ text: contextMsg + '\n\n[사용자 메시지]\n' + text }] });
+    aiHistory.push({ role: 'user', content: contextMsg + '\n\n[사용자 메시지]\n' + text });
 
     aiBusy = true;
     const thinking = aiAppendMsg('model thinking', '...');
     try {
-        let data = await callGemini(aiHistory);
-        let candidate = data.candidates && data.candidates[0];
-        if (!candidate) throw new Error('빈 응답 (candidates 없음)');
+        const first = await callLLM(aiHistory);
+        aiHistory.push({ role: 'assistant', content: first.text, toolCalls: first.toolCalls });
 
-        let parts = candidate.content.parts || [];
-        aiHistory.push({ role: 'model', parts });
-
-        const functionCalls = parts.filter(p => p.functionCall).map(p => p.functionCall);
-        const textParts = parts.filter(p => p.text).map(p => p.text).join('\n');
-
-        if (functionCalls.length) {
-            const results = functionCalls.map(fc => aiApplySetValue(fc.args.field, fc.args.value));
+        if (first.toolCalls && first.toolCalls.length) {
+            const results = first.toolCalls.map(tc => aiApplySetValue(tc.args.field, tc.args.value));
             thinking.remove();
             aiAppendMsg('applied', '✅ ' + results.join(', '));
 
-            const funcResponseParts = functionCalls.map((fc, i) => ({
-                functionResponse: { name: fc.name, response: { result: results[i] } }
-            }));
-            aiHistory.push({ role: 'user', parts: funcResponseParts });
+            first.toolCalls.forEach((tc, i) => aiHistory.push({ role: 'tool', toolCallId: tc.id, name: tc.name, result: results[i] }));
 
-            data = await callGemini(aiHistory);
-            candidate = data.candidates && data.candidates[0];
-            if (candidate) {
-                aiHistory.push({ role: 'model', parts: candidate.content.parts });
-                const finalText = candidate.content.parts.filter(p => p.text).map(p => p.text).join('\n');
-                if (finalText) aiAppendMsg('model', finalText);
-            }
+            const followUp = await callLLM(aiHistory);
+            aiHistory.push({ role: 'assistant', content: followUp.text, toolCalls: followUp.toolCalls });
+            if (followUp.text) aiAppendMsg('model', followUp.text);
         } else {
             thinking.remove();
-            if (textParts) aiAppendMsg('model', textParts);
+            if (first.text) aiAppendMsg('model', first.text);
         }
     } catch (e) {
         thinking.remove();
         if (e.needKey) {
             aiHistory.pop(); // 키가 없어 실패한 턴은 히스토리에서 제거 — 재시도 시 다시 붙는다
             aiPendingRetryText = text;
-            aiShowKeySetup();
+            aiShowKeySetup(e.provider);
         } else {
             aiAppendMsg('error', translations[currentLang].aiErrGeneric + e.message);
         }
