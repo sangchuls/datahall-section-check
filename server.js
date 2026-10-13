@@ -59,15 +59,18 @@ const MIME = {
     '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml'
 };
 
+// 앱 구동에 필요한 정적 파일만 내려준다 — .env·feedback.json·server.js 등 점(.)으로 시작하거나
+// 허용 확장자가 아닌 파일은 404 처리해 API 키·피드백 데이터가 URL로 새지 않게 한다.
+const STATIC_ALLOWED = new Set(['.html', '.js', '.css', '.png', '.jpg', '.svg', '.ico']);
 function serveStatic(req, res, urlPath) {
     let rel = urlPath === '/' ? '/index.html' : urlPath;
-    rel = decodeURIComponent(rel.split('?')[0]);
+    try { rel = decodeURIComponent(rel.split('?')[0]); } catch (e) { res.writeHead(400); res.end('Bad request'); return; }
     const filePath = path.normalize(path.join(__dirname, rel));
-    // 프로젝트 폴더 바깥 경로 접근 차단
-    if (!filePath.startsWith(__dirname)) { res.writeHead(403); res.end('Forbidden'); return; }
+    const ext = path.extname(filePath).toLowerCase();
+    const hidden = rel.split(/[\/]/).some(seg => seg.startsWith('.')) || path.basename(filePath) === 'server.js';
+    if (!filePath.startsWith(__dirname + path.sep) || hidden || !STATIC_ALLOWED.has(ext)) { res.writeHead(404); res.end('Not found'); return; }
     fs.readFile(filePath, (err, data) => {
         if (err) { res.writeHead(404); res.end('Not found'); return; }
-        const ext = path.extname(filePath);
         res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
         res.end(data);
     });
@@ -114,11 +117,70 @@ async function handleChat(req, res) {
     });
 }
 
+// ── 사용자 피드백 메모 ──
+// 누구나 제출(POST /api/feedback)할 수 있고, 목록 조회·상태 변경·삭제는 FEEDBACK_ADMIN_KEY가 설정돼 있으면
+// 그 키(x-admin-key 헤더)를 가진 관리자만 가능하다. 데이터는 feedback.json(gitignore)에 저장된다.
+const FEEDBACK_FILE = path.join(__dirname, 'feedback.json');
+const FB_CATEGORIES = ['bug', 'feature', 'improve', 'etc'];
+const FB_STATUSES = ['new', 'accepted', 'hold', 'rejected'];
+function fbRead() { try { return JSON.parse(fs.readFileSync(FEEDBACK_FILE, 'utf8')); } catch (e) { return []; } }
+function fbWrite(list) { fs.writeFileSync(FEEDBACK_FILE, JSON.stringify(list, null, 2)); }
+function fbIsAdmin(req) { const k = process.env.FEEDBACK_ADMIN_KEY; return !k || req.headers['x-admin-key'] === k; }
+
+function readJsonBody(req, res, cb) {
+    let body = '', tooBig = false;
+    req.on('data', c => { body += c; if (body.length > 1e6) { tooBig = true; sendJSON(res, 413, { error: '요청이 너무 큽니다.' }); req.destroy(); } });
+    req.on('end', () => {
+        if (tooBig) return;
+        try { cb(JSON.parse(body || '{}')); } catch (e) { sendJSON(res, 400, { error: '잘못된 요청 본문입니다.' }); }
+    });
+}
+
+function handleFeedback(req, res, route) {
+    if (route === 'list') {
+        if (!fbIsAdmin(req)) { sendJSON(res, 401, { error: '관리자 키가 필요합니다.' }); return; }
+        sendJSON(res, 200, fbRead());
+        return;
+    }
+    readJsonBody(req, res, body => {
+        if (route === 'add') {
+            const text = String(body.text || '').trim().slice(0, 5000);
+            if (!text) { sendJSON(res, 400, { error: '내용이 비어 있습니다.' }); return; }
+            const ctx = body.context && JSON.stringify(body.context).length < 100000 ? body.context : null;
+            const item = {
+                id: 'fb_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                createdAt: new Date().toISOString(),
+                category: FB_CATEGORIES.includes(body.category) ? body.category : 'etc',
+                text, status: 'new', context: ctx
+            };
+            const list = fbRead(); list.push(item); fbWrite(list);
+            sendJSON(res, 200, { ok: true, id: item.id });
+            return;
+        }
+        if (!fbIsAdmin(req)) { sendJSON(res, 401, { error: '관리자 키가 필요합니다.' }); return; }
+        const list = fbRead();
+        const idx = list.findIndex(x => x.id === body.id);
+        if (idx === -1) { sendJSON(res, 404, { error: '항목을 찾을 수 없습니다.' }); return; }
+        if (route === 'update') {
+            if (!FB_STATUSES.includes(body.status)) { sendJSON(res, 400, { error: '잘못된 상태값입니다.' }); return; }
+            list[idx].status = body.status;
+        } else if (route === 'delete') {
+            list.splice(idx, 1);
+        }
+        fbWrite(list);
+        sendJSON(res, 200, { ok: true });
+    });
+}
+
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/api/chat') {
         handleChat(req, res);
         return;
     }
+    if (req.url === '/api/feedback' && req.method === 'GET') { handleFeedback(req, res, 'list'); return; }
+    if (req.method === 'POST' && req.url === '/api/feedback') { handleFeedback(req, res, 'add'); return; }
+    if (req.method === 'POST' && req.url === '/api/feedback/update') { handleFeedback(req, res, 'update'); return; }
+    if (req.method === 'POST' && req.url === '/api/feedback/delete') { handleFeedback(req, res, 'delete'); return; }
     if (req.method === 'GET') {
         serveStatic(req, res, req.url);
         return;

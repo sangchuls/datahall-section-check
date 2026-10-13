@@ -196,3 +196,26 @@ body.pause-animations .fan-svg, body.pause-animations .sa-air { animation-play-s
 .ai-msg.keysetup a { color: #2980b9; }
 .ai-inputRow { display: flex; gap: 6px; flex-shrink: 0; }
 .ai-inputRow input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+/* 데이터홀 자유 배치 CDU */
+.cdu-block.free { cursor: move; z-index: 14; }
+.cdu-block.free.dragging { opacity: 0.8; box-shadow: 0 0 0 2px #2980b9, 0 4px 10px rgba(0,0,0,0.3); z-index: 30; }
+.cdu-block.free.overlap { border: 2px solid var(--accent); background: #ffebeb; color: var(--accent); }
+
+/* 사용자 피드백 메모 */
+.ai-overlay.fb-overlay { right: 440px; width: 420px; }
+.fb-form { display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.fb-form select { width: 100%; text-align: left; }
+.fb-form textarea { width: 100%; box-sizing: border-box; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit; resize: vertical; }
+.fb-formRow { display: flex; justify-content: space-between; align-items: center; }
+.fb-attach { font-size: 11px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.fb-listhead { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.fb-listhead #fbModeNote { flex: 1; font-size: 10px; color: #7f8c8d; }
+.fb-listhead select { width: auto; font-size: 11px; padding: 2px; }
+.fb-item { border: 1px solid #e1e4e8; border-radius: 6px; padding: 7px 9px; background: #fff; font-size: 12px; }
+.fb-item .fb-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #7f8c8d; margin-bottom: 4px; }
+.fb-item .fb-text { white-space: pre-wrap; word-break: break-word; color: #2c3e50; line-height: 1.45; }
+.fb-item .fb-actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.fb-badge { padding: 1px 6px; border-radius: 8px; font-weight: bold; font-size: 10px; color: #fff; }
+.fb-badge.new { background: #3498db; } .fb-badge.accepted { background: #27ae60; } .fb-badge.hold { background: #f39c12; } .fb-badge.rejected { background: #95a5a6; }
+.fb-item.accepted { border-left: 3px solid #27ae60; } .fb-item.hold { border-left: 3px solid #f39c12; } .fb-item.rejected { border-left: 3px solid #95a5a6; opacity: .75; } .fb-item.new { border-left: 3px solid #3498db; }
+.ai-header .action-btn { white-space: nowrap; }

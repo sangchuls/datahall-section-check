@@ -25,6 +25,7 @@
             <button class="action-btn export" onclick="exportData()" data-i18n="btnExport">⬇️ 내보내기(.json)</button>
             <button class="action-btn" onclick="openBlockEditor()" data-i18n="btnBlockEditor">🧩 랙 블록 편집기</button>
             <button class="action-btn" onclick="openAIAssistant()" data-i18n="btnAI">🤖 AI 어시스턴트</button>
+            <button class="action-btn" onclick="openFeedback()" data-i18n="btnFeedback">📝 피드백</button>
         </div>
     </div>
     
@@ -97,7 +98,12 @@
                     <select id="cduLoc" class="sel-wide">
                         <option value="gallery" selected data-i18n="valCduGallery">갤러리(항온항습실)</option>
                         <option value="hall" data-i18n="valCduHall">데이터홀 랙열 끝단</option>
+                        <option value="free" data-i18n="valCduFree">데이터홀 자유 배치(드래그)</option>
                     </select>
+                </div>
+                <div class="input-group" id="cduFreeRow" style="display:none;">
+                    <label style="color:#27ae60; font-size:10px;" data-i18n="lblCduFreeHint">평면도에서 CDU를 드래그해 이동</label>
+                    <button class="btn-small" onclick="resetCduFree()" data-i18n="btnCduFreeReset">↺ 위치 초기화</button>
                 </div>
 
                 <div class="input-group"><label data-i18n="lblNCfm">CFM/kW</label><input type="number" id="nCfm" value="170" step="5"></div>
@@ -257,6 +263,44 @@
                 <button class="action-btn export" onclick="sendAIMessage()" data-i18n="aiSend">전송</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="ai-overlay fb-overlay" id="fbOverlay" style="display:none;">
+    <div class="ai-panel">
+        <div class="ai-header">
+            <div>
+                <h2 data-i18n="fbTitle">📝 사용자 피드백</h2>
+                <div class="ai-subtitle" data-i18n="fbSubtitle">개선 의견·버그를 메모로 남기면 목록에 쌓이고, 관리자가 반영 여부를 결정합니다.</div>
+            </div>
+            <button class="action-btn" onclick="closeFeedback()">✕ <span data-i18n="beClose">닫기</span></button>
+        </div>
+        <div class="fb-form">
+            <select id="fbCategory">
+                <option value="feature" data-i18n="fbCatFeature">기능 요청</option>
+                <option value="bug" data-i18n="fbCatBug">버그 제보</option>
+                <option value="improve" data-i18n="fbCatImprove">개선 제안</option>
+                <option value="etc" data-i18n="fbCatEtc">기타</option>
+            </select>
+            <textarea id="fbText" rows="3" data-i18n-ph="fbPlaceholder" placeholder="예: CDU를 회전할 수 있으면 좋겠어요"></textarea>
+            <div class="fb-formRow">
+                <label class="fb-attach"><input type="checkbox" id="fbAttach"> <span data-i18n="fbAttach">현재 설계값 첨부</span></label>
+                <button class="action-btn export" onclick="fbSubmit()" data-i18n="fbSave">저장</button>
+            </div>
+        </div>
+        <div class="fb-listhead">
+            <span id="fbModeNote"></span>
+            <select id="fbFilter" onchange="fbSetFilter(this.value)">
+                <option value="all" data-i18n="fbStAll">전체</option>
+                <option value="new" data-i18n="fbStNew">신규</option>
+                <option value="accepted" data-i18n="fbStAccepted">반영 예정</option>
+                <option value="hold" data-i18n="fbStHold">보류</option>
+                <option value="rejected" data-i18n="fbStRejected">반려</option>
+            </select>
+            <button class="btn-small" onclick="fbExport()" data-i18n="fbExport">⬇ 내보내기</button>
+            <button class="btn-small" id="fbAdminBtn" onclick="fbAdminLogin()" style="display:none;" data-i18n="fbAdmin">🔐 관리자</button>
+        </div>
+        <div class="ai-body"><div class="ai-log" id="fbList"></div></div>
     </div>
 </div>
 

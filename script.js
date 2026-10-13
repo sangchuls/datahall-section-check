@@ -16,7 +16,7 @@ const translations = {
         lblNUnits: "AC 유효 대수 (N)", lblNPlanUnits: "AC 총 댓수 (열)", lblNCatcher: "AC 캐쳐(예비) (열)",
         lblNW: "AC 개구부 폭 (m)", lblNRatio: "AC 유효 개구율", lblNVel: "AC SA 풍속(m/s)", lblNTiers: "적층 (Tiers)",
         lblAcRatio: "AC 담당 비율 (%)", lblLcRatio: "LC 담당 비율 (%)", lblCduCap: "CDU 용량 (kW)", lblCduW: "CDU 폭 (m)", lblCduCatcher: "CDU 예비 대수 (EA)",
-        lblCduLoc: "CDU 배치 위치", valCduGallery: "갤러리(항온항습실)", valCduHall: "데이터홀 랙열 끝단",
+        lblCduLoc: "CDU 배치 위치", valCduGallery: "갤러리(항온항습실)", valCduHall: "데이터홀 랙열 끝단", valCduFree: "데이터홀 자유 배치(드래그)", lblCduFreeHint: "평면도에서 CDU를 드래그해 이동", btnCduFreeReset: "↺ 위치 초기화", formCduFreeNote: "평면도에서 드래그로 이동 (붉은 표시 = 랙/다른 CDU와 겹침)", formCduFreeOverlap: "겹침",
         lblAcHMode: "AC 높이 산출 방식", valHAuto: "자동 (풍속 기준)", valHManual: "수동 (높이 지정)", valHCount: "대수 산출 (H·V 고정)", lblNUnitH: "AC 1대 높이 (m)",
         valT1: "1단", valT2: "2단", valT3: "3단",
         sec4: "[건축] 기둥 및 층고 제원",
@@ -34,6 +34,13 @@ const translations = {
         aiKeyChangeConfirm: "저장된 키를 새 키로 바꿀까요?",
         aiCorsBlocked: "이 공급자는 브라우저에서 직접 호출을 막고 있는 것 같습니다. 소유자의 로컬 서버(node server.js)를 통해서만 쓸 수 있습니다.",
         aiProviderLabel: "AI 공급자",
+        fbTitle: "📝 사용자 피드백", fbSubtitle: "개선 의견·버그를 메모로 남기면 목록에 쌓이고, 관리자가 반영 여부를 결정합니다.", btnFeedback: "📝 피드백",
+        fbPlaceholder: "예: CDU를 회전할 수 있으면 좋겠어요", fbSave: "저장", fbAttach: "현재 설계값 첨부", fbExport: "⬇ 내보내기", fbAdmin: "🔐 관리자",
+        fbCatFeature: "기능 요청", fbCatBug: "버그 제보", fbCatImprove: "개선 제안", fbCatEtc: "기타",
+        fbStAll: "전체", fbStNew: "신규", fbStAccepted: "반영 예정", fbStHold: "보류", fbStRejected: "반려",
+        fbEmpty: "저장된 피드백이 없습니다.", fbNoteServer: "서버 연동 — 모든 사용자의 피드백이 모입니다", fbNoteLocal: "이 브라우저에만 저장됨 — 내보내기(.json)로 전달하세요", fbNoteNeedAdmin: "관리자 키가 필요합니다 (내 피드백만 표시)",
+        fbEmptyAlert: "내용을 입력하세요.", fbAdminPrompt: "관리자 키를 입력하세요", fbDeleteConfirm: "이 피드백을 삭제할까요?", fbAttached: "설계값 불러오기",
+        fbActAccept: "✅ 반영", fbActHold: "⏸ 보류", fbActReject: "❌ 반려", fbActDelete: "🗑",
         form1Title: "1. IT부하 및 랙 밀도", form1Racks: "총 랙", form1Dens: "밀도", form2Title: "2. 데이터홀 Containment Pitch",
         form3Title: "3. 필요 총 풍량 (AC)", form3LcTitle: "4. 필요 CDU 대수 (LC)", form4Title: "5. FWU 요구 높이 (H)", form4Type: "타입", form4Units: "총 유효대수", form4Air: "1대당 풍량", form4Req: "요구H",
         form5Title: "6. 보 밑 RA공간", form5Clear: "순층고", form5Equip: "장비총고",
@@ -70,7 +77,7 @@ const translations = {
         lblNUnits: "AC Active Units (N)", lblNPlanUnits: "AC Total Units (Rows)", lblNCatcher: "AC Catcher (Rows)",
         lblNW: "AC Opening W(m)", lblNRatio: "Effective Ratio", lblNVel: "SA Velocity (m/s)", lblNTiers: "Tiers",
         lblAcRatio: "AC Load Ratio (%)", lblLcRatio: "LC Load Ratio (%)", lblCduCap: "CDU Capacity (kW)", lblCduW: "CDU Width (m)", lblCduCatcher: "CDU Standby (EA)",
-        lblCduLoc: "CDU Location", valCduGallery: "Gallery (CRAH Room)", valCduHall: "Data Hall (Row End)",
+        lblCduLoc: "CDU Location", valCduGallery: "Gallery (CRAH Room)", valCduHall: "Data Hall (Row End)", valCduFree: "Data Hall (Free, drag)", lblCduFreeHint: "Drag CDUs in the plan view", btnCduFreeReset: "↺ Reset positions", formCduFreeNote: "Drag in the plan view (red = overlaps a rack/CDU)", formCduFreeOverlap: "overlaps",
         lblAcHMode: "AC Height Mode", valHAuto: "Auto (by Velocity)", valHManual: "Manual (Fixed H)", valHCount: "Solve Count (fixed H·V)", lblNUnitH: "AC Unit Height (m)",
         valT1: "1 Tier", valT2: "2 Tiers", valT3: "3 Tiers",
         sec4: "[Arch] Column & Ceiling Specs",
@@ -88,6 +95,13 @@ const translations = {
         aiKeyChangeConfirm: "Replace the saved key with a new one?",
         aiCorsBlocked: "This provider appears to block direct browser calls. It can only be used through the owner's local server (node server.js).",
         aiProviderLabel: "AI Provider",
+        fbTitle: "📝 User Feedback", fbSubtitle: "Leave ideas or bug reports as notes; they pile up in a list and the owner decides what to adopt.", btnFeedback: "📝 Feedback",
+        fbPlaceholder: "e.g. I'd like to be able to rotate the CDU", fbSave: "Save", fbAttach: "Attach current design values", fbExport: "⬇ Export", fbAdmin: "🔐 Admin",
+        fbCatFeature: "Feature request", fbCatBug: "Bug report", fbCatImprove: "Improvement", fbCatEtc: "Other",
+        fbStAll: "All", fbStNew: "New", fbStAccepted: "Accepted", fbStHold: "On hold", fbStRejected: "Rejected",
+        fbEmpty: "No feedback yet.", fbNoteServer: "Server-linked — feedback from all users is collected", fbNoteLocal: "Stored in this browser only — send it via Export (.json)", fbNoteNeedAdmin: "Admin key required (showing only your own)",
+        fbEmptyAlert: "Enter some text.", fbAdminPrompt: "Enter the admin key", fbDeleteConfirm: "Delete this feedback?", fbAttached: "Load design values",
+        fbActAccept: "✅ Accept", fbActHold: "⏸ Hold", fbActReject: "❌ Reject", fbActDelete: "🗑",
         form1Title: "1. IT Load & Rack Density", form1Racks: "Total Racks", form1Dens: "Density", form2Title: "2. Data Hall Containment Pitch",
         form3Title: "3. Required Airflow (AC)", form3LcTitle: "4. Required CDU (LC)", form4Title: "5. Required FWU Height (H)", form4Type: "Type", form4Units: "Total Active Units", form4Air: "Airflow/unit", form4Req: "Req. H",
         form5Title: "6. RA Space under Beam", form5Clear: "Clear Height", form5Equip: "Total Equip H",
@@ -220,6 +234,9 @@ const inputsList = ['rackKw', 'rW', 'rD', 'rH', 'rHA', 'rCA', 'rCorridor', 'rCnt
 const allInputs = [...inputsList, 'nUnits', 'nPlanUnits', 'nCatcher', 'nTiers'];
 // 문자열 값을 갖는 select들 (parseFloat 대상에서 제외)
 const selectInputs = ['acHMode', 'cduLoc', 'rackType'];
+// 자유 배치 CDU 위치: [{x(m, 도면 좌측 기준), z(m, 데이터홀 상단 기준)}] — 없는 인덱스는 기본 위치를 쓴다
+let cduFreePos = [];
+function resetCduFree() { cduFreePos = []; calc(); }
 
 inputsList.forEach(id => {
     document.getElementById(id).addEventListener('input', calc);
@@ -385,6 +402,7 @@ function getFormData() {
     });
     data.fwuType = document.querySelector('input[name="fwuType"]:checked').value;
     data.yGrids = yGrids;
+    data.cduFreePos = cduFreePos;
     return data;
 }
 
@@ -398,6 +416,7 @@ function setFormData(data) {
         nextGridId = yGrids.length;
         renderYGridUI();
     }
+    cduFreePos = Array.isArray(data.cduFreePos) ? data.cduFreePos : [];
     applyAcHeightMode();
     currentRackType = elRackType.value;
     rackTypeStash = {};
@@ -749,16 +768,18 @@ function calc() {
     const cduActive = v.cduCap > 0 ? Math.ceil(cduReqKw / v.cduCap) : 0;
     const cduTotal = cduActive + v.cduCatcher;
     const cduInGallery = (v.cduLoc === 'gallery');
+    const cduFree = (v.cduLoc === 'free');
+    document.getElementById('cduFreeRow').style.display = cduFree ? 'flex' : 'none';
     const cduPerSide = cduInGallery ? Math.ceil(cduTotal / gallerySideMultiplier) : 0;
 
     // 데이터홀 랙열 끝단 배치 시: 도면에 그려지는 랙 열 수에 균등 분배
     // 블록형 랙은 CDU를 유닛으로 내장할 수 있으므로 별도의 열 끝단 배치는 사용하지 않는다
     const hallRowCount = Math.max(1, v.rRows);
-    const hallCduTotal = (cduInGallery || isBlock) ? 0 : cduTotal;
+    const hallCduTotal = (cduInGallery || isBlock || cduFree) ? 0 : cduTotal;
     const hallPerRowMax = hallCduTotal > 0 ? Math.ceil(hallCduTotal / hallRowCount) : 0;
     const hallRowsUsed = Math.min(hallRowCount, hallCduTotal);
     const hallCduLen = hallPerRowMax > 0 ? (hallPerRowMax * v.cduW + (hallPerRowMax - 1) * v.nGap) : 0;
-    const hallCdu = { total: hallCduTotal, perRowMax: hallPerRowMax, rowsUsed: hallRowsUsed, len: hallCduLen, rowCount: hallRowCount, catcher: cduInGallery ? 0 : v.cduCatcher };
+    const hallCdu = { total: hallCduTotal, perRowMax: hallPerRowMax, rowsUsed: hallRowsUsed, len: hallCduLen, rowCount: hallRowCount, catcher: cduInGallery ? 0 : v.cduCatcher, freeTotal: cduFree ? cduTotal : 0 };
 
     const totalRows = v.nPlanUnits; 
     const bays = v.nColCnt - 1; 
@@ -832,7 +853,7 @@ function calc() {
         <div class="f-item"><b>${t.form1Title}:</b><br>${isBlock && blockStats ? `${t.formRackType}: <b style="color:#8e44ad;">🧩 ${blockDef.name}</b> (${blockStats.templateRows} ${t.formBlockCycle})<br>${t.formBlockRows}: <code style="color:#c0392b;">${v.rRows}${t.beRowsSuffix}</code> × ${t.lblRCnt}: ${v.rCnt} ➔ GPU ${blockStats.counts.gpu} · ${t.beAddGeneral} ${blockStats.counts.general} · CDU ${blockStats.counts.cdu}<br>${t.form1Dens}: <code style="color:#c0392b;">${totalRacks}${t.beUnitsSuffix} / ${Math.round(v.nKw).toLocaleString()} kW</code>` : `${t.form1Racks}: ${totalRacks} EA ➔ ${t.form1Dens}: <b>${rackDensity.toFixed(2)} kW/Rack</b>`}</div>
         <div class="f-item"><b>${t.form2Title}:</b><br>HA(${v.rHA}) + Rack(${v.rD}×2) + CA(${v.rCA}) = <code style="color:#27ae60;">${pitch.toFixed(2)} m</code></div>
         <div class="f-item"><b>${t.form3Title}:</b><br>${v.nKw}kW × ${v.acRatio}% = ${acLoad.toFixed(1)}kW<br>${acLoad.toFixed(1)}kW × ${v.nCfm}CFM/kW × 1.699 × ${v.nMargin} = <b>${Math.round(totalCmh).toLocaleString()} CMH</b></div>
-        <div class="f-item"><b>${t.form3LcTitle}:</b><br>${v.nKw}kW × ${v.lcRatio}% × ${v.nMargin} = ${cduReqKw.toFixed(1)}kW<br>${cduReqKw.toFixed(1)}kW / ${v.cduCap}kW = <b>${cduActive} + ${v.cduCatcher}대(예비) = ${cduTotal}대</b><br>${t.formLcLoc}: <b style="color:#27ae60;">${cduInGallery ? t.valCduGallery : t.valCduHall}</b>${cduInGallery ? '' : `<br>${t.formLcRows}: ${hallCdu.rowsUsed} / ${hallCdu.rowCount} (${t.formLcPerRow} ${hallCdu.perRowMax}EA) → ${t.formLcAddLen}: <code style="color:#c0392b;">${hallCdu.len.toFixed(2)} m</code>`}</div>
+        <div class="f-item"><b>${t.form3LcTitle}:</b><br>${v.nKw}kW × ${v.lcRatio}% × ${v.nMargin} = ${cduReqKw.toFixed(1)}kW<br>${cduReqKw.toFixed(1)}kW / ${v.cduCap}kW = <b>${cduActive} + ${v.cduCatcher}대(예비) = ${cduTotal}대</b><br>${t.formLcLoc}: <b style="color:#27ae60;">${cduInGallery ? t.valCduGallery : (cduFree ? t.valCduFree : t.valCduHall)}</b>${cduFree ? `<br><span style="color:#7f8c8d;">${t.formCduFreeNote}</span>` : ''}${(cduInGallery || cduFree) ? '' : `<br>${t.formLcRows}: ${hallCdu.rowsUsed} / ${hallCdu.rowCount} (${t.formLcPerRow} ${hallCdu.perRowMax}EA) → ${t.formLcAddLen}: <code style="color:#c0392b;">${hallCdu.len.toFixed(2)} m</code>`}</div>
         <div class="f-item"><b>${t.form4Title}:</b><br>${t.form4Type} <b>Type ${v.fwuType}</b> ➔ ${t.form4Units}: ${v.nUnits}×${gallerySideMultiplier} = <b>${totalActiveUnits} EA</b><br>${t.form4Air}: ${Math.round(unitCmh).toLocaleString()} CMH ➔ ${t.form4Req}: <code style="color:#c0392b;">${unitH.toFixed(2)} m</code><br>${t.form4Mode}: <b>${isCountMode ? t.form4ModeCount : (isManualH ? t.form4ModeManual : t.form4ModeAuto)}</b> → ${t.form4Vel}: <code style="color:${saVel > 4 ? '#c0392b' : '#2980b9'};">${saVel.toFixed(2)} m/s</code>${isCountMode ? `<br>${t.form4Solved}: <b>${v.nUnits}×${gallerySideMultiplier} EA</b> (${v.nPlanUnits}${t.form4Row}) / ${t.form4Cap}: ${galleryRowCapacity}${t.form4Row} ${rowOverflow > 0 ? `<b style="color:#c0392b;">▲ ${rowOverflow}${t.form4Over} — ${t.form4Hint}</b>` : '<b style="color:#27ae60;">OK</b>'}` : ''}</div>
         <div class="f-item"><b>${t.form5Title}:</b><br>${t.form5Clear}(${v.nCH}-${v.nSlab}-${v.nBD}m) - ${t.form5Equip}(${totalFwuH.toFixed(2)}m) = <b>${raSpace.toFixed(2)} m</b></div>
     `;
@@ -841,6 +862,65 @@ function calc() {
 }
 
 const BASE_SCALE = 40;
+
+// ── 자유 배치 CDU 드래그 ──
+const cduFreeCtx = { dataHallY: 0 };  // 마지막 렌더의 데이터홀 상단 y(px) — 저장 좌표(z)의 기준
+function rectsOverlap(a, b) {
+    const e = 1e-6;
+    return a.x < b.x + b.w - e && a.x + a.w > b.x + e && a.z < b.z + b.d - e && a.z + a.d > b.z + e;
+}
+
+// 마우스로 CDU를 끌면 0.05m 격자 + 주변 랙/장비/다른 CDU의 모서리에 자석처럼 붙는다 (Alt = 스냅 끄기).
+// 끌고 있는 동안은 요소만 옮기고, 놓는 순간 calc()로 전체를 다시 그려 3D·겹침 표시까지 갱신한다.
+function startCduFreeDrag(e, idx, el, w, d, rot) {
+    if (e.button !== 0 || measureMode.plan) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const wrapper = document.getElementById('drawPlan');
+    const scale = viewState.plan.scale || 1;
+    const toLocal = ev => {
+        const r = wrapper.getBoundingClientRect();
+        return { x: (ev.clientX - r.left) / scale / BASE_SCALE, z: (ev.clientY - r.top) / scale / BASE_SCALE };
+    };
+    const p0 = toLocal(e);
+    const grabX = p0.x - el.offsetLeft / BASE_SCALE, grabZ = p0.z - el.offsetTop / BASE_SCALE;
+    const obstacles = currentGeometry3D
+        .filter(b => (b.type === 'rack' || b.type === 'fwu' || b.type === 'cdu') && b.freeIdx !== idx)
+        .map(b => ({ x: b.x, z: b.z, w: b.w, d: b.d }));
+    const SNAP = 0.2, GRID = 0.05;
+
+    const snapAxis = (pos, size, los, his) => {
+        let best = null, bd = SNAP;
+        los.forEach(t => { const k = Math.abs(t - pos); if (k < bd) { bd = k; best = t; } });
+        his.forEach(t => { const k = Math.abs(t - (pos + size)); if (k < bd) { bd = k; best = t - size; } });
+        return best !== null ? best : Math.round(pos / GRID) * GRID;
+    };
+    const xLo = obstacles.flatMap(o => [o.x + o.w, o.x]), xHi = obstacles.flatMap(o => [o.x, o.x + o.w]);
+    const zLo = obstacles.flatMap(o => [o.z + o.d, o.z]), zHi = obstacles.flatMap(o => [o.z, o.z + o.d]);
+
+    let moved = false;
+    const onMove = ev => {
+        const p = toLocal(ev);
+        let nx = p.x - grabX, nz = p.z - grabZ;
+        nx = ev.altKey ? nx : snapAxis(nx, w, xLo, xHi);
+        nz = ev.altKey ? nz : snapAxis(nz, d, zLo, zHi);
+        el.style.left = (nx * BASE_SCALE) + 'px';
+        el.style.top = (nz * BASE_SCALE) + 'px';
+        cduFreePos[idx] = { x: nx, z: nz - cduFreeCtx.dataHallY / BASE_SCALE, rot };
+        const r = { x: nx, z: nz, w, d };
+        el.classList.toggle('overlap', obstacles.some(o => rectsOverlap(r, o)));
+        moved = true;
+    };
+    const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        el.classList.remove('dragging');
+        if (moved) calc();
+    };
+    el.classList.add('dragging');
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+}
 
 function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, totalFwuH, raSpace, saVel, raVelocity, hallCdu, blockInfo) {
     const totalDrawingWidth = ((v.nColCnt - 1) * v.nSpan) + v.nColW;
@@ -1328,6 +1408,47 @@ function renderCAD(v, clearSpan, fwuRowsRender, cduPerSide, isPlanFit, unitH, to
 
     if (topGalleryY >= 0) renderGallery(topGalleryY, true);
     if (bottomGalleryY >= 0) renderGallery(bottomGalleryY, false);
+
+    // 자유 배치 CDU — 평면도에서 드래그해 데이터홀 안 임의 위치로 옮긴다 (더블클릭 = 90° 회전)
+    // 위치는 cduFreePos[i] = {x, z, rot}; 저장된 값이 없는 CDU는 데이터홀 위쪽 복도에 나란히 기본 배치한다.
+    if (hallCdu && hallCdu.freeTotal > 0) {
+        cduFreeCtx.dataHallY = dataHallY;
+        const cw = v.cduW, cd = hallCduDepth / BASE_SCALE, dhY = dataHallY / BASE_SCALE;
+        const obstacles = geo3D.filter(b => b.type === 'rack' || b.type === 'fwu' || b.type === 'cdu').map(b => ({ x: b.x, z: b.z, w: b.w, d: b.d }));
+        const free = [];
+        for (let i = 0; i < hallCdu.freeTotal; i++) {
+            const sv = cduFreePos[i];
+            const rot = !!(sv && sv.rot);
+            free.push({
+                i, rot,
+                x: sv ? sv.x : dhStartX / BASE_SCALE + i * (cw + v.nGap),
+                z: dhY + (sv ? sv.z : -Math.min(cd + 0.1, v.rCorridor)),
+                w: rot ? cd : cw, d: rot ? cw : cd
+            });
+        }
+        free.forEach(f => {
+            const others = obstacles.concat(free.filter(o => o !== f));
+            const overlap = others.some(o => rectsOverlap(f, o));
+            const isCatcher = f.i >= (hallCdu.freeTotal - hallCdu.catcher);
+            const el = document.createElement('div');
+            el.className = 'cdu-block inhall free' + (isCatcher ? ' catcher' : '') + (overlap ? ' overlap' : '');
+            el.style.left = (f.x * BASE_SCALE) + 'px';
+            el.style.top = (f.z * BASE_SCALE) + 'px';
+            el.style.width = (f.w * BASE_SCALE) + 'px';
+            el.style.height = (f.d * BASE_SCALE) + 'px';
+            el.innerHTML = `<span class="fwu-label">${isCatcher ? t.lblCatcher : 'CDU'}</span>`;
+            el.addEventListener('mousedown', ev => startCduFreeDrag(ev, f.i, el, f.w, f.d, f.rot));
+            el.addEventListener('dblclick', ev => {
+                ev.stopPropagation();
+                cduFreePos[f.i] = { x: f.x, z: f.z - dhY, rot: !f.rot };
+                calc();
+            });
+            drawPlan.appendChild(el);
+
+            push3D('cdu', f.x * BASE_SCALE, f.z * BASE_SCALE, f.w * BASE_SCALE, f.d * BASE_SCALE, v.nSlab, 2.3, overlap ? '#e74c3c' : (isCatcher ? '#f39c12' : '#27ae60'));
+            geo3D[geo3D.length - 1].freeIdx = f.i;
+        });
+    }
     
     drawSect.style.width = canvasTotalHeight + 'px';
     drawSect.style.height = (totalCH * BASE_SCALE) + 'px';
@@ -2091,7 +2212,7 @@ function buildAIFieldMeta() {
     });
     const blockList = beLoadBlocks().map(b => `block:${b.id}(${b.name})`).join(', ') || '없음';
     meta.rackType = `${t.lblRackType} — 'general' 또는 저장된 블록 중 하나: ${blockList}`;
-    meta.cduLoc = `${t.lblCduLoc} — 'gallery' 또는 'hall'`;
+    meta.cduLoc = `${t.lblCduLoc} — 'gallery', 'hall'(랙열 끝단), 'free'(드래그 자유 배치) 중 하나`;
     meta.acHMode = `${t.lblAcHMode} — 'auto', 'manual', 'count' 중 하나`;
     meta.fwuType = `${t.lblFwuType} — 'A', 'B', 'C' 중 하나`;
     return meta;
@@ -2134,8 +2255,7 @@ function onAIProviderChange(value) {
 }
 
 // 헤더를 드래그해 패널을 옮길 수 있게 한다 — 챗봇을 닫지 않고 다른 부분을 볼 수 있도록 위치를 비켜줄 때 사용
-(function initAIPanelDrag() {
-    const overlay = document.getElementById('aiOverlay');
+function makeFloatingDraggable(overlay) {
     const header = overlay.querySelector('.ai-header');
     let dragging = false, startX = 0, startY = 0, startRight = 0, startBottom = 0;
 
@@ -2155,7 +2275,9 @@ function onAIProviderChange(value) {
         overlay.style.bottom = Math.max(0, startBottom - dy) + 'px';
     });
     document.addEventListener('mouseup', () => { dragging = false; });
-})();
+}
+makeFloatingDraggable(document.getElementById('aiOverlay'));
+makeFloatingDraggable(document.getElementById('fbOverlay'));
 
 function aiAppendMsg(role, text) {
     const log = document.getElementById('aiLog');
@@ -2494,6 +2616,158 @@ async function aiRunTurn(text) {
     } finally {
         aiBusy = false;
     }
+}
+// ══════════════════════════════════════════════════════════════
+// 사용자 피드백 메모 — 사용자가 남긴 의견을 목록으로 쌓아두고, 관리자가 반영/보류/반려를 결정한다.
+// 항상 이 브라우저(localStorage)에 저장하고, 서버(server.js)가 있으면 feedback.json에도 모아서
+// 모든 사용자의 피드백을 한곳에서 볼 수 있다. (서버 없는 정적 배포에서는 내보내기(.json)로 전달)
+// ══════════════════════════════════════════════════════════════
+const FB_LOCAL_KEY = 'feedbackItems';
+let fbItems = [];
+let fbMode = 'local';      // 'server' | 'local'
+let fbNeedAdmin = false;
+let fbFilterVal = 'all';
+
+function fbLocalLoad() { try { return JSON.parse(localStorage.getItem(FB_LOCAL_KEY) || '[]'); } catch (e) { return []; } }
+function fbLocalSave(list) { localStorage.setItem(FB_LOCAL_KEY, JSON.stringify(list)); }
+
+async function fbApi(path, method, body) {
+    const headers = { 'Content-Type': 'application/json' };
+    const key = localStorage.getItem('feedbackAdminKey');
+    if (key) headers['x-admin-key'] = key;
+    let res;
+    try { res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined }); }
+    catch (e) { return { ok: false, offline: true }; }
+    let data;
+    try { data = await res.json(); } catch (e) { return { ok: false, offline: true }; }
+    return { ok: res.ok, status: res.status, data };
+}
+
+async function fbRefresh() {
+    const r = await fbApi('/api/feedback', 'GET');
+    fbNeedAdmin = false;
+    if (r.ok && Array.isArray(r.data)) { fbMode = 'server'; fbItems = r.data; }
+    else {
+        fbMode = 'local'; fbItems = fbLocalLoad();
+        if (r.status === 401) fbNeedAdmin = true;
+    }
+    fbRender();
+}
+
+function openFeedback() { document.getElementById('fbOverlay').style.display = 'flex'; fbRefresh(); document.getElementById('fbText').focus(); }
+function closeFeedback() { document.getElementById('fbOverlay').style.display = 'none'; }
+function fbSetFilter(v) { fbFilterVal = v; fbRender(); }
+
+function fbAdminLogin() {
+    const k = prompt(translations[currentLang].fbAdminPrompt);
+    if (!k) return;
+    localStorage.setItem('feedbackAdminKey', k);
+    fbRefresh();
+}
+
+async function fbSubmit() {
+    const t = translations[currentLang];
+    const textEl = document.getElementById('fbText');
+    const text = textEl.value.trim();
+    if (!text) { alert(t.fbEmptyAlert); return; }
+    const item = {
+        id: 'fb_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        createdAt: new Date().toISOString(),
+        category: document.getElementById('fbCategory').value,
+        text, status: 'new',
+        context: document.getElementById('fbAttach').checked ? getFormData() : null
+    };
+    const local = fbLocalLoad(); local.push(item); fbLocalSave(local);   // 내 브라우저에는 항상 남긴다
+    await fbApi('/api/feedback', 'POST', { category: item.category, text: item.text, context: item.context });
+    textEl.value = '';
+    document.getElementById('fbAttach').checked = false;
+    await fbRefresh();
+}
+
+async function fbSetStatus(id, status) {
+    if (fbMode === 'server') {
+        await fbApi('/api/feedback/update', 'POST', { id, status });
+    } else {
+        const list = fbLocalLoad(); const it = list.find(x => x.id === id);
+        if (it) { it.status = status; fbLocalSave(list); }
+    }
+    await fbRefresh();
+}
+
+async function fbDelete(id) {
+    if (!confirm(translations[currentLang].fbDeleteConfirm)) return;
+    if (fbMode === 'server') await fbApi('/api/feedback/delete', 'POST', { id });
+    else fbLocalSave(fbLocalLoad().filter(x => x.id !== id));
+    await fbRefresh();
+}
+
+// 관리자가 설계 상황을 그대로 재현해볼 수 있게, 첨부된 설계값을 이 앱에 불러온다
+function fbLoadContext(id) {
+    const it = fbItems.find(x => x.id === id);
+    if (it && it.context) setFormData(it.context);
+}
+
+function fbExport() {
+    const blob = new Blob([JSON.stringify(fbItems, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'DataHall_feedback_' + Date.now() + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function fbRender() {
+    const t = translations[currentLang];
+    const list = document.getElementById('fbList');
+    if (!list) return;
+    document.getElementById('fbModeNote').innerText = fbMode === 'server' ? t.fbNoteServer : (fbNeedAdmin ? t.fbNoteNeedAdmin : t.fbNoteLocal);
+    document.getElementById('fbAdminBtn').style.display = fbNeedAdmin ? '' : 'none';
+
+    const catLabel = { feature: t.fbCatFeature, bug: t.fbCatBug, improve: t.fbCatImprove, etc: t.fbCatEtc };
+    const stLabel = { new: t.fbStNew, accepted: t.fbStAccepted, hold: t.fbStHold, rejected: t.fbStRejected };
+    const items = fbItems.filter(x => fbFilterVal === 'all' || x.status === fbFilterVal).slice().reverse();
+
+    list.innerHTML = '';
+    if (!items.length) {
+        const empty = document.createElement('div');
+        empty.style.cssText = 'font-size:11px;color:#95a5a6;text-align:center;padding:14px;';
+        empty.innerText = t.fbEmpty;
+        list.appendChild(empty);
+        return;
+    }
+    items.forEach(it => {
+        const box = document.createElement('div');
+        box.className = 'fb-item ' + it.status;
+
+        const meta = document.createElement('div');
+        meta.className = 'fb-meta';
+        const left = document.createElement('span');
+        left.innerText = (catLabel[it.category] || it.category) + ' · ' + new Date(it.createdAt).toLocaleString();
+        const badge = document.createElement('span');
+        badge.className = 'fb-badge ' + it.status;
+        badge.innerText = stLabel[it.status] || it.status;
+        meta.appendChild(left); meta.appendChild(badge);
+
+        const text = document.createElement('div');   // 사용자 입력이므로 innerText로만 넣는다 (XSS 방지)
+        text.className = 'fb-text';
+        text.innerText = it.text;
+
+        const acts = document.createElement('div');
+        acts.className = 'fb-actions';
+        const mk = (label, fn, extra) => {
+            const b = document.createElement('button');
+            b.className = 'btn-small'; b.innerText = label; if (extra) b.style.cssText = extra;
+            b.onclick = fn; acts.appendChild(b);
+        };
+        if (it.status !== 'accepted') mk(t.fbActAccept, () => fbSetStatus(it.id, 'accepted'));
+        if (it.status !== 'hold') mk(t.fbActHold, () => fbSetStatus(it.id, 'hold'));
+        if (it.status !== 'rejected') mk(t.fbActReject, () => fbSetStatus(it.id, 'rejected'));
+        if (it.context) mk('📎 ' + t.fbAttached, () => fbLoadContext(it.id), 'color:#2980b9;');
+        mk(t.fbActDelete, () => fbDelete(it.id), 'margin-left:auto;color:var(--accent);');
+
+        box.appendChild(meta); box.appendChild(text); box.appendChild(acts);
+        list.appendChild(box);
+    });
 }
 
 changeLang();
